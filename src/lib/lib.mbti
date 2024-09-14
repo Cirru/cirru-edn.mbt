@@ -1,0 +1,27 @@
+package tiye/cirru-edn/lib
+
+// Values
+fn hello() -> String
+
+fn to_string(Edn) -> String
+
+// Types and methods
+pub enum Edn {
+  Nil
+  Bool(Bool)
+  Number(Double)
+  Symbol(String)
+  Str(String)
+  Quote(@tiye/cirru-parser/lib.Cirru)
+  Buffer(Array[UInt])
+}
+impl Edn {
+  op_equal(Self, Self) -> Bool
+}
+
+// Type aliases
+
+// Traits
+
+// Extension Methods
+
