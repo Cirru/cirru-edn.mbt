@@ -7,21 +7,21 @@ pub enum Edn {
   Bool(Bool)
   Number(Double)
   Symbol(String)
-  // Tag(EdnTag)
+  Tag(EdnTag)
   Str(String)
   Quote(@cirru_parser.Cirru)
-  // Tuple(EdnTupleView)
-  // List(EdnListView)
-  // Set(EdnSetView)
-  // Map(EdnMapView)
-  // Record(EdnRecordView)
+  Tuple(EdnTupleView)
+  List(EdnListView)
+  Set(EdnSetView)
+  Map(EdnMapView)
+  Record(EdnRecordView)
   Buffer(Array[UInt])
   /// reference to Rust data, not interpretable in Calcit
   // AnyRef(EdnAnyRef)
-} derive(Eq)
+} derive(Eq, Hash)
 
-pub fn to_string(x : Edn) -> String {
-  match x {
+pub fn to_string(self : Edn) -> String {
+  match self {
     Edn::Nil => "nil".to_string()
     Edn::Bool(b) => if b { "true" } else { "false" }
     Edn::Number(n) => n.to_string()
@@ -30,4 +30,8 @@ pub fn to_string(x : Edn) -> String {
     Edn::Quote(e) => e.to_string()
     Edn::Buffer(b) => b.to_string()
   }
+}
+
+pub fn default(self : Edn) -> Edn {
+  Edn::Nil
 }
