@@ -3,7 +3,31 @@ pub struct EdnRecordView {
   extra : Array[(EdnTag, Edn)]
 } derive(Eq)
 
-fn new(tag : EdnTag, extra : Array[(EdnTag, Edn)]) -> EdnRecordView {
+impl Hash for EdnRecordView with hash(self) { self.extra.length() + 1 }
+
+impl Hash for EdnRecordView with hash_combine(self, hasher) {
+  self.tag.hash_combine(hasher)
+  for i in self.extra {
+    i.0.hash_combine(hasher)
+    i.1.hash_combine(hasher)
+  }
+}
+
+pub fn to_string(self : EdnRecordView) -> String {
+  let mut s = ""
+  s = s + "(record"
+  s = s + self.tag.to_string()
+  for i in self.extra {
+    s = s + " (" + i.0.to_string() + " " + i.1.to_string() + ")"
+  }
+  s = s + ")"
+  s
+}
+
+fn EdnRecordView::new(
+  tag : EdnTag,
+  extra : Array[(EdnTag, Edn)]
+) -> EdnRecordView {
   { tag, extra }
 }
 

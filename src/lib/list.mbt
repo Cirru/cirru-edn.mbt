@@ -1,4 +1,29 @@
-type EdnListView Array[Edn] derive(Eq, Hash, Default)
+type EdnListView Array[Edn] derive(Eq)
+
+impl Hash for EdnListView with hash(self) { self._.length() }
+
+impl Hash for EdnListView with hash_combine(self, hasher) {
+  for i in self._ {
+    i.hash_combine(hasher)
+  }
+}
+
+fn to_string(self : EdnListView) -> String {
+  let mut s = ""
+  s = s + "(list )"
+  for i = 0, len = self._.length(); i < len; i = i + 1 {
+    if i > 0 {
+      s = s + ", "
+    }
+    s = s + self._[i].to_string()
+  }
+  s = s + ")"
+  s
+}
+
+fn EdnListView::default() -> EdnListView {
+  []
+}
 
 fn get(self : EdnListView, idx : UInt) -> Edn? {
   if idx < self._.length().reinterpret_as_uint() {

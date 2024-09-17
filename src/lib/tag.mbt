@@ -4,7 +4,7 @@ fn to_string(self : EdnTag) -> String {
   self.to_string()
 }
 
-fn new(s : String) -> EdnTag {
+fn EdnTag::new(s : String) -> EdnTag {
   EdnTag(s)
 }
 

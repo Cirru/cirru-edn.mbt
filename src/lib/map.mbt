@@ -1,8 +1,8 @@
-type EdnMapView @hashmap.T[Edn, Edn] derive(Eq)
+type EdnMapView @hashmap.T[Edn, Edn]
 
 /// implement Eq for EdnMapView,
 /// TODO: this is not efficient, we should implement a more efficient way to compare two maps
-fn op_eq(self : EdnMapView, other : EdnMapView) -> Bool {
+fn op_equal(self : EdnMapView, other : EdnMapView) -> Bool {
   let mut equal = true
   self._.each(
     fn(k, v) {
@@ -24,6 +24,27 @@ fn op_eq(self : EdnMapView, other : EdnMapView) -> Bool {
     },
   )
   equal
+}
+
+impl Hash for EdnMapView with hash(self) { self._.size() }
+
+impl Hash for EdnMapView with hash_combine(self, hasher) {
+  self._.each(
+    fn(k, v) {
+      k.hash_combine(hasher)
+      v.hash_combine(hasher)
+    },
+  )
+}
+
+fn to_string(self : EdnMapView) -> String {
+  let mut s = ""
+  s = s + "(map"
+  self._.each(
+    fn(k, v) { s = s + " (" + k.to_string() + " " + v.to_string() + ")" },
+  )
+  s = s + ")"
+  s
 }
 
 fn tag_get(self : EdnMapView, k : Edn) -> Edn? {
