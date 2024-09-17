@@ -3,20 +3,65 @@ package tiye/cirru-edn/lib
 // Values
 fn hello() -> String
 
-fn to_string(Edn) -> String
-
 // Types and methods
 pub enum Edn {
   Nil
   Bool(Bool)
   Number(Double)
   Symbol(String)
+  Tag(EdnTag)
   Str(String)
   Quote(@tiye/cirru-parser/lib.Cirru)
-  Buffer(Array[UInt])
+  Tuple(EdnTupleView)
+  List(EdnListView)
+  Set(EdnSetView)
+  Map(EdnMapView)
+  Record(EdnRecordView)
+  Buffer(EdnBufferView)
 }
 impl Edn {
+  default() -> Self
+  hash_combine(Self, Hasher) -> Unit
   op_equal(Self, Self) -> Bool
+  to_string(Self) -> String
+}
+
+type EdnBufferView
+impl EdnBufferView {
+  op_equal(Self, Self) -> Bool
+}
+
+type EdnListView
+impl EdnListView {
+  op_equal(Self, Self) -> Bool
+}
+
+type EdnMapView
+
+pub struct EdnRecordView {
+  pub tag : EdnTag
+  pub extra : Array[(EdnTag, Edn)]
+}
+impl EdnRecordView {
+  op_equal(Self, Self) -> Bool
+  to_string(Self) -> String
+}
+
+type EdnSetView
+
+type EdnTag
+impl EdnTag {
+  hash_combine(Self, Hasher) -> Unit
+  op_equal(Self, Self) -> Bool
+}
+
+pub struct EdnTupleView {
+  pub tag : Edn
+  pub extra : Array[Edn]
+}
+impl EdnTupleView {
+  op_equal(Self, Self) -> Bool
+  to_string(Self) -> String
 }
 
 // Type aliases
