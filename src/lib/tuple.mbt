@@ -3,6 +3,10 @@ pub struct EdnTupleView {
   extra : Array[Edn]
 } derive(Eq)
 
+pub fn EdnTupleView::new(tag : Edn, extra : Array[Edn]) -> EdnTupleView {
+  { tag, extra }
+}
+
 impl Hash for EdnTupleView with hash(self) { self.extra.length() + 1 }
 
 impl Hash for EdnTupleView with hash_combine(self, hasher) {

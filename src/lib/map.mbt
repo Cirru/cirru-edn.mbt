@@ -1,4 +1,4 @@
-type EdnMapView @hashmap.T[Edn, Edn]
+type EdnMapView Map[Edn, Edn]
 
 /// implement Eq for EdnMapView,
 /// TODO: this is not efficient, we should implement a more efficient way to compare two maps

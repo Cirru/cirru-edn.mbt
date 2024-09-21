@@ -27,7 +27,20 @@ pub fn to_string(self : Edn) -> String {
     Edn::Bool(b) => if b { "true" } else { "false" }
     Edn::Number(n) => n.to_string()
     Edn::Symbol(s) => s
-    Edn::Str(s) => s
+    Edn::Str(s) =>
+      if is_simple_token(s) {
+        s
+      } else {
+        let mut ret = "|"
+        for c in s {
+          if is_simple_char(c) {
+            ret = ret + c.to_string()
+          } else {
+            ret = ret + c.to_string().escape()
+          }
+        }
+        ret
+      }
     Edn::Quote(e) => e.to_string()
     Edn::Buffer(b) => b.to_string()
     Edn::Tuple(t) => t.to_string()
@@ -36,4 +49,61 @@ pub fn to_string(self : Edn) -> String {
     Edn::Map(m) => m.to_string()
     Edn::Record(r) => r.to_string()
   }
+}
+
+// TODO Ord Hash
+
+pub fn Edn::str(s : String) -> Edn {
+  Edn::Str(s)
+}
+
+pub fn Edn::tag(s : String) -> Edn {
+  Edn::Tag(EdnTag::new(s))
+}
+
+pub fn Edn::symbol(s : String) -> Edn {
+  Edn::Symbol(s)
+}
+
+pub fn Edn::tuple(tag : Edn, extra : Array[Edn]) -> Edn {
+  Edn::Tuple(EdnTupleView::new(tag, extra))
+}
+
+// TODO any-ref
+
+pub fn Edn::is_literal(self : Edn) -> Bool {
+  match self {
+    Edn::Nil => true
+    Edn::Bool(_) => true
+    Edn::Number(_) => true
+    Edn::Symbol(_) => true
+    Edn::Str(_) => true
+    Edn::Tag(_) => true
+    _ => false
+  }
+}
+
+fn is_simple_char(c : Char) -> Bool {
+  match c {
+    '-' | '?' | '.' | '$' | ',' => true
+    _ =>
+      if c.to_int() >= 0x30 && c.to_int() <= 0x39 { // 0-9
+        true
+      } else if c.to_int() >= 0x41 && c.to_int() <= 0x5A { // A-Z
+        true
+      } else if c.to_int() >= 0x61 && c.to_int() <= 0x7A { // a-z
+        true
+      } else {
+        false
+      }
+  }
+}
+
+fn is_simple_token(tok : String) -> Bool {
+  for s in tok {
+    if not(is_simple_char(s)) {
+      return false
+    }
+  }
+  true
 }
