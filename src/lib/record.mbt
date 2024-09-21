@@ -44,3 +44,25 @@ fn has_key(self : EdnRecordView, key : EdnTag) -> Bool {
 fn insert(self : EdnRecordView, key : EdnTag, value : Edn) -> Unit {
   self.extra.push((key, value))
 }
+
+fn compare(self : EdnRecordView, right : EdnRecordView) -> Int {
+  let len = self.extra.length()
+  let right_len = right.extra.length()
+  if len < right_len {
+    return -1
+  }
+  if len > right_len {
+    return 1
+  }
+  for i = 0, len = len; i < len; i = i + 1 {
+    let mut ret = self.extra[i].0.compare(right.extra[i].0)
+    if ret != 0 {
+      return ret
+    }
+    ret = self.extra[i].1.compare(right.extra[i].1)
+    if ret != 0 {
+      return ret
+    }
+  }
+  0
+}

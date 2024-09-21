@@ -11,3 +11,7 @@ fn EdnTag::new(s : String) -> EdnTag {
 fn str(self : EdnTag) -> String {
   self._
 }
+
+pub fn EdnTag::compare(self : EdnTag, other : EdnTag) -> Int {
+  self._.compare(other._)
+}

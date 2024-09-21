@@ -21,6 +21,22 @@ fn to_string(self : EdnListView) -> String {
   s
 }
 
+fn compare(self : EdnListView, right : EdnListView) -> Int {
+  for i = 0, len = self._.length(); i < len; i = i + 1 {
+    if i >= right._.length() {
+      return 1
+    }
+    let ret = self._[i].compare(right._[i])
+    if ret != 0 {
+      return ret
+    }
+  }
+  if self._.length() < right._.length() {
+    return -1
+  }
+  0
+}
+
 fn EdnListView::default() -> EdnListView {
   []
 }

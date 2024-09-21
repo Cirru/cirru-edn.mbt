@@ -26,3 +26,19 @@ pub fn to_string(self : EdnTupleView) -> String {
   s = s + ")"
   s
 }
+
+pub fn compare(self : EdnTupleView, right : EdnTupleView) -> Int {
+  let ret = self.tag.compare(right.tag)
+  if ret != 0 {
+    return ret
+  }
+  for i in self.extra {
+    for j in right.extra {
+      let ret = i.compare(j)
+      if ret != 0 {
+        return ret
+      }
+    }
+  }
+  0
+}

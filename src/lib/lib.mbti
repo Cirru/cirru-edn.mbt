@@ -1,7 +1,11 @@
 package tiye/cirru-edn/lib
 
 // Values
+fn format(Edn, Bool) -> String!EdnCommonError
+
 fn hello() -> String
+
+fn parse(String) -> Edn!EdnCommonError
 
 // Types and methods
 pub enum Edn {
@@ -20,15 +24,29 @@ pub enum Edn {
   Buffer(EdnBufferView)
 }
 impl Edn {
+  compare(Self, Self) -> Int
   default() -> Self
   hash_combine(Self, Hasher) -> Unit
+  is_literal(Self) -> Bool
   op_equal(Self, Self) -> Bool
+  str(String) -> Self
+  symbol(String) -> Self
+  tag(String) -> Self
   to_string(Self) -> String
+  tuple(Self, Array[Self]) -> Self
 }
 
 type EdnBufferView
 impl EdnBufferView {
   op_equal(Self, Self) -> Bool
+}
+
+pub type! EdnCommonError String
+impl EdnCommonError {
+  default() -> Self
+  hash_combine(Self, Hasher) -> Unit
+  op_equal(Self, Self) -> Bool
+  to_string(Self) -> String
 }
 
 type EdnListView
@@ -51,6 +69,7 @@ type EdnSetView
 
 type EdnTag
 impl EdnTag {
+  compare(Self, Self) -> Int
   hash_combine(Self, Hasher) -> Unit
   op_equal(Self, Self) -> Bool
 }
@@ -60,6 +79,8 @@ pub struct EdnTupleView {
   pub extra : Array[Edn]
 }
 impl EdnTupleView {
+  compare(Self, Self) -> Int
+  new(Edn, Array[Edn]) -> Self
   op_equal(Self, Self) -> Bool
   to_string(Self) -> String
 }
@@ -69,4 +90,5 @@ impl EdnTupleView {
 // Traits
 
 // Extension Methods
+impl Show for EdnCommonError
 

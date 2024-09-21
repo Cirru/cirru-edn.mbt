@@ -45,3 +45,14 @@ fn length(self : EdnSetView) -> UInt {
 fn is_empty(self : EdnSetView) -> Bool {
   self._.is_empty()
 }
+
+fn compare(self : EdnSetView, right : EdnSetView) -> Int {
+  if self._.size() < right._.size() {
+    return -1
+  }
+  if self._.size() > right._.size() {
+    return 1
+  }
+  // TODO does not compare the order of set elements since set is unordered
+  0
+}

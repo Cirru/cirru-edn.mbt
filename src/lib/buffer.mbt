@@ -20,3 +20,19 @@ fn to_string(self : EdnBufferView) -> String {
   s = s + "]"
   s
 }
+
+fn compare(self : EdnBufferView, right : EdnBufferView) -> Int {
+  for i = 0, len = self._.length(); i < len; i = i + 1 {
+    if i >= right._.length() {
+      return 1
+    }
+    let ret = self._[i].compare(right._[i])
+    if ret != 0 {
+      return ret
+    }
+  }
+  if self._.length() < right._.length() {
+    return -1
+  }
+  0
+}

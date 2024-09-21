@@ -282,15 +282,21 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru!EdnCommonError {
       let ys : Array[@cirru_parser.Cirru] = []
       ys.push(@cirru_parser.Cirru::Leaf("{}"))
       let items = Array::from_iter(xs._.iter())
-      // items.sort_by(|(a1, a2): (Edn, Edn), (b1, b2): (Edn, Edn)| {
-      //   match (a1.is_literal(), b1.is_literal(), a2.is_literal(), b2.is_literal()) {
-      //     (true, true, true, false) => Less,
-      //     (true, true, false, true) => Greater,
-      //     (true, false, ..) => Less,
-      //     (false, true, ..) => Greater,
-      //     _ => a1.cmp(b1),
-      //   }
-      // });
+      items.sort_by(
+        fn(left, right) {
+          let (a1, a2) = left
+          let (b1, b2) = right
+          match
+            (a1.is_literal(), b1.is_literal(), a2.is_literal(), b2.is_literal()) {
+            (true, true, true, false) => -1
+            (true, true, false, true) => 1
+            (true, false, _, _) => -1
+            (false, true, _, _) => 1
+            // _ => a1.cmp(b1)
+            _ => a1.compare(b1)
+          }
+        },
+      )
       for pair in items.iter() {
         let (k, v) = pair
         ys.push(

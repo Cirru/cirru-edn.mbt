@@ -51,7 +51,52 @@ pub fn to_string(self : Edn) -> String {
   }
 }
 
-// TODO Ord Hash
+// TODO Hash
+
+pub fn compare(self : Edn, right : Edn) -> Int {
+  let ret = match (self, right) {
+    (Edn::Nil, Edn::Nil) => 0
+    (Edn::Nil, _) => -1
+    (_, Edn::Nil) => 1
+    (Edn::Bool(a), Edn::Bool(b)) => a.op_compare(b)
+    (Edn::Bool(_), _) => -1
+    (_, Edn::Bool(_)) => 1
+    (Edn::Number(a), Edn::Number(b)) => a.compare(b)
+    (Edn::Number(_), _) => -1
+    (_, Edn::Number(_)) => 1
+    (Edn::Symbol(a), Edn::Symbol(b)) => a.compare(b)
+    (Edn::Symbol(_), _) => -1
+    (_, Edn::Symbol(_)) => 1
+    (Edn::Tag(a), Edn::Tag(b)) => a.compare(b)
+    (Edn::Tag(_), _) => -1
+    (_, Edn::Tag(_)) => 1
+    (Edn::Str(a), Edn::Str(b)) => a.compare(b)
+    (Edn::Str(_), _) => -1
+    (_, Edn::Str(_)) => 1
+    (Edn::Quote(a), Edn::Quote(b)) => a.compare(b)
+    (Edn::Quote(_), _) => -1
+    (_, Edn::Quote(_)) => 1
+    (Edn::Tuple(a), Edn::Tuple(b)) => a.compare(b)
+    (Edn::Tuple(_), _) => -1
+    (_, Edn::Tuple(_)) => 1
+    (Edn::List(a), Edn::List(b)) => a.compare(b)
+    (Edn::List(_), _) => -1
+    (_, Edn::List(_)) => 1
+    (Edn::Buffer(a), Edn::Buffer(b)) => a.compare(b)
+    (Edn::Buffer(_), _) => -1
+    (_, Edn::Buffer(_)) => 1
+    (Edn::Set(a), Edn::Set(b)) => a.compare(b)
+    (Edn::Set(_), _) => -1
+    (_, Edn::Set(_)) => 1
+    (Edn::Map(a), Edn::Map(b)) => a.compare(b)
+    (Edn::Map(_), _) => -1
+    (_, Edn::Map(_)) => 1
+    (Edn::Record(a), Edn::Record(b)) => a.compare(b)
+    // (Edn::Record(_), _) => -1
+    // (_, Edn::Record(_)) => 1
+  }
+  ret
+}
 
 pub fn Edn::str(s : String) -> Edn {
   Edn::Str(s)

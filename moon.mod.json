@@ -2,7 +2,7 @@
   "name": "tiye/cirru-edn",
   "version": "0.0.1",
   "deps": {
-    "tiye/cirru-parser": "0.0.5"
+    "tiye/cirru-parser": "0.0.6"
   },
   "readme": "README.md",
   "repository": "https://github.com/Cirru/cirru-edn.mbt",

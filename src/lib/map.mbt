@@ -81,3 +81,14 @@ fn length(self : EdnMapView) -> UInt {
 fn is_empty(self : EdnMapView) -> Bool {
   self._.is_empty()
 }
+
+fn compare(self : EdnMapView, right : EdnMapView) -> Int {
+  if self._.size() < right._.size() {
+    return -1
+  }
+  if self._.size() > right._.size() {
+    return 1
+  }
+  // order of map is not defined, so we need to sort the keys
+  return 0
+}
