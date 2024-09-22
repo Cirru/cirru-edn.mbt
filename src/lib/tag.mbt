@@ -1,7 +1,7 @@
 type EdnTag String derive(Eq, Hash)
 
 fn to_string(self : EdnTag) -> String {
-  self.to_string()
+  self._
 }
 
 fn EdnTag::new(s : String) -> EdnTag {

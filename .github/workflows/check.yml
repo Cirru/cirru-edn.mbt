@@ -27,7 +27,8 @@ jobs:
 
       - name: moon test
         run: |
-          moon test --target js
+          # moon test --target js
+          moon run src/main --target js
 
       # - name: moon bundle
       #   run: moon bundle

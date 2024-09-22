@@ -52,6 +52,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
       if xs.is_empty() {
         raise EdnCommonError("empty expr is invalid for edn")
       } else {
+        println("extracting list: " + xs.to_string())
         match xs[0] {
           @cirru_parser.Cirru::Leaf(s) =>
             match s {
