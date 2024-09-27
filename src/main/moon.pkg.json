@@ -1,6 +1,4 @@
 {
   "is-main": true,
-  "import": [
-    "tiye/cirru-edn/lib"
-  ]
+  "import": [{ "path": "tiye/cirru-edn/lib", "alias": "edn" }]
 }
