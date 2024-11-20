@@ -2,7 +2,7 @@ pub fn hello() -> String {
   "Hello, world!"
 }
 
-pub enum Edn {
+pub(all) enum Edn {
   Nil
   Bool(Bool)
   Number(Double)

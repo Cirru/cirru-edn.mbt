@@ -1,4 +1,4 @@
-pub type! EdnCommonError String derive(Eq, Hash, Default)
+pub(all) type! EdnCommonError String derive(Eq, Hash, Default)
 
 pub fn to_string(self : EdnCommonError) -> String {
   match self {
@@ -119,7 +119,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                     continue
                   }
                   match extract_cirru_edn?(x) {
-                    Ok(v) => ys.insert(v)
+                    Ok(v) => ys.add(v)
                     Err(v) => raise EdnCommonError(v.to_string())
                   }
                 }

@@ -34,8 +34,8 @@ fn contains(self : EdnSetView, x : Edn) -> Bool {
   self._.contains(x)
 }
 
-fn insert(self : EdnSetView, x : Edn) -> Unit {
-  self._.insert(x)
+fn add(self : EdnSetView, x : Edn) -> Unit {
+  self._.add(x)
 }
 
 fn length(self : EdnSetView) -> UInt {

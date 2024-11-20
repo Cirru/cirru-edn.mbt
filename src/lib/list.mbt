@@ -73,9 +73,9 @@ fn push(self : EdnListView, x : Edn) -> Unit {
 /// implement iterator for EdnListView
 fn iter(self : EdnListView) -> Iter[Edn] {
   Iter::new(
-    fn(yield) {
+    fn(yielding) {
       for i = 0, len = self._.length(); i < len; i = i + 1 {
-        if yield(self._[i]) == IterEnd {
+        if yielding(self._[i]) == IterEnd {
           break IterEnd
         }
       } else {

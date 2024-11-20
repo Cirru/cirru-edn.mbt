@@ -1,4 +1,4 @@
-pub struct EdnRecordView {
+pub(all) struct EdnRecordView {
   tag : EdnTag
   extra : Array[(EdnTag, Edn)]
 } derive(Eq)
