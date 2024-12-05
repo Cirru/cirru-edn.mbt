@@ -1,16 +1,19 @@
+///|
 pub(all) type! EdnCommonError String derive(Eq, Hash, Default)
 
+///|
 pub fn to_string(self : EdnCommonError) -> String {
   match self {
     EdnCommonError(s) => s
   }
 }
 
+///|
 pub impl Show for EdnCommonError with output(self, logger) {
   Show::output(self.to_string(), logger)
 }
 
-/// parse Cirru code into data
+///| parse Cirru code into data
 pub fn parse(s : String) -> Edn!EdnCommonError {
   let xs = @cirru_parser.parse?(s).unwrap()
   if xs.length() == 1 {
@@ -24,6 +27,7 @@ pub fn parse(s : String) -> Edn!EdnCommonError {
   }
 }
 
+///|
 fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
   match node {
     @cirru_parser.Cirru::Leaf(s) =>
@@ -244,6 +248,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
   }
 }
 
+///|
 fn is_comment(node : @cirru_parser.Cirru) -> Bool {
   match node {
     @cirru_parser.Cirru::Leaf(_) => false
@@ -251,6 +256,7 @@ fn is_comment(node : @cirru_parser.Cirru) -> Bool {
   }
 }
 
+///|
 fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru!EdnCommonError {
   match data {
     Edn::Nil => @cirru_parser.Cirru::Leaf("nil")
@@ -363,7 +369,7 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru!EdnCommonError {
   }
 }
 
-/// generate string from Edn
+///| generate string from Edn
 pub fn format(data : Edn, use_inline : Bool) -> String!EdnCommonError {
   let options : @cirru_parser.CirruWriterOptions = { use_inline, }
   let ret = match assemble_cirru_node!(data) {

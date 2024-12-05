@@ -1,13 +1,17 @@
+///|
 type EdnBufferView Array[UInt] derive(Eq)
 
+///|
 impl Hash for EdnBufferView with hash(self) { self._.length() }
 
+///|
 impl Hash for EdnBufferView with hash_combine(self, hasher) {
   for i in self._ {
     hasher.combine(i)
   }
 }
 
+///|
 fn to_string(self : EdnBufferView) -> String {
   let mut s = ""
   s = s + "["
@@ -21,6 +25,7 @@ fn to_string(self : EdnBufferView) -> String {
   s
 }
 
+///|
 fn compare(self : EdnBufferView, right : EdnBufferView) -> Int {
   for i = 0, len = self._.length(); i < len; i = i + 1 {
     if i >= right._.length() {
