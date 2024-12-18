@@ -62,7 +62,7 @@ pub fn compare(self : Edn, right : Edn) -> Int {
     (Edn::Nil, Edn::Nil) => 0
     (Edn::Nil, _) => -1
     (_, Edn::Nil) => 1
-    (Edn::Bool(a), Edn::Bool(b)) => a.op_compare(b)
+    (Edn::Bool(a), Edn::Bool(b)) => a.compare(b)
     (Edn::Bool(_), _) => -1
     (_, Edn::Bool(_)) => 1
     (Edn::Number(a), Edn::Number(b)) => a.compare(b)
