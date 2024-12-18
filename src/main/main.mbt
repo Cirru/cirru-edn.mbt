@@ -1,3 +1,4 @@
+///|
 let demo =
   #|{}
   #|  :a $ {}
@@ -7,6 +8,7 @@ let demo =
   #|    :d true
   #|    :e $ [] 1 2 :three
 
+///|
 fn main {
   match @lib.parse?(demo) {
     Ok(x) => {
