@@ -1,7 +1,9 @@
+///|
 pub fn hello() -> String {
   "Hello, world!"
 }
 
+///|
 pub(all) enum Edn {
   Nil
   Bool(Bool)
@@ -20,6 +22,7 @@ pub(all) enum Edn {
   // AnyRef(EdnAnyRef)
 } derive(Eq, Hash, Default)
 
+///|
 pub fn to_string(self : Edn) -> String {
   match self {
     Edn::Nil => "nil".to_string()
@@ -53,12 +56,13 @@ pub fn to_string(self : Edn) -> String {
 
 // TODO Hash
 
+///|
 pub fn compare(self : Edn, right : Edn) -> Int {
   let ret = match (self, right) {
     (Edn::Nil, Edn::Nil) => 0
     (Edn::Nil, _) => -1
     (_, Edn::Nil) => 1
-    (Edn::Bool(a), Edn::Bool(b)) => a.op_compare(b)
+    (Edn::Bool(a), Edn::Bool(b)) => a.compare(b)
     (Edn::Bool(_), _) => -1
     (_, Edn::Bool(_)) => 1
     (Edn::Number(a), Edn::Number(b)) => a.compare(b)
@@ -98,24 +102,29 @@ pub fn compare(self : Edn, right : Edn) -> Int {
   ret
 }
 
+///|
 pub fn Edn::str(s : String) -> Edn {
   Edn::Str(s)
 }
 
+///|
 pub fn Edn::tag(s : String) -> Edn {
   Edn::Tag(EdnTag::new(s))
 }
 
+///|
 pub fn Edn::symbol(s : String) -> Edn {
   Edn::Symbol(s)
 }
 
+///|
 pub fn Edn::tuple(tag : Edn, extra : Array[Edn]) -> Edn {
   Edn::Tuple(EdnTupleView::new(tag, extra))
 }
 
 // TODO any-ref
 
+///|
 pub fn Edn::is_literal(self : Edn) -> Bool {
   match self {
     Edn::Nil => true
@@ -128,6 +137,7 @@ pub fn Edn::is_literal(self : Edn) -> Bool {
   }
 }
 
+///|
 fn is_simple_char(c : Char) -> Bool {
   match c {
     '-' | '?' | '.' | '$' | ',' => true
@@ -144,6 +154,7 @@ fn is_simple_char(c : Char) -> Bool {
   }
 }
 
+///|
 fn is_simple_token(tok : String) -> Bool {
   for s in tok {
     if not(is_simple_char(s)) {
