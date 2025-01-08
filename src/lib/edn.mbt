@@ -20,6 +20,7 @@ pub(all) enum Edn {
   Buffer(EdnBufferView)
   /// reference to Rust data, not interpretable in Calcit
   // AnyRef(EdnAnyRef)
+  Atom(Edn)
 } derive(Eq, Hash, Default)
 
 ///|
@@ -51,7 +52,13 @@ pub fn to_string(self : Edn) -> String {
     Edn::Set(s) => s.to_string()
     Edn::Map(m) => m.to_string()
     Edn::Record(r) => r.to_string()
+    Edn::Atom(a) => "atom " + a.to_string()
   }
+}
+
+///|
+pub impl Show for Edn with output(self, logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 // TODO Hash
@@ -95,6 +102,9 @@ pub fn compare(self : Edn, right : Edn) -> Int {
     (Edn::Map(a), Edn::Map(b)) => a.compare(b)
     (Edn::Map(_), _) => -1
     (_, Edn::Map(_)) => 1
+    (Edn::Atom(a), Edn::Atom(b)) => a.compare(b)
+    (Edn::Atom(_), _) => -1
+    (_, Edn::Atom(_)) => 1
     (Edn::Record(a), Edn::Record(b)) => a.compare(b)
     // (Edn::Record(_), _) => -1
     // (_, Edn::Record(_)) => 1

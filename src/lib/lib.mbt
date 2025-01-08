@@ -56,7 +56,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
       if xs.is_empty() {
         raise EdnCommonError("empty expr is invalid for edn")
       } else {
-        println("extracting list: " + xs.to_string())
+        // println("extracting list: " + xs.to_string())
         match xs[0] {
           @cirru_parser.Cirru::Leaf(s) =>
             match s {
@@ -83,6 +83,12 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                 }
                 ret.or_error!(EdnCommonError("missing edn do value"))
               }
+              "atom" =>
+                if xs.length() == 2 {
+                  Edn::Atom(extract_cirru_edn!(xs[1]))
+                } else {
+                  raise EdnCommonError("missing edn atom value")
+                }
               "::" => {
                 let mut tag : Edn? = None
                 let extra : Array[Edn] = []
@@ -289,27 +295,26 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru!EdnCommonError {
       let ys : Array[@cirru_parser.Cirru] = []
       ys.push(@cirru_parser.Cirru::Leaf("{}"))
       let items = Array::from_iter(xs._.iter())
-      items.sort_by(
-        fn(left, right) {
-          let (a1, a2) = left
-          let (b1, b2) = right
-          match
-            (a1.is_literal(), b1.is_literal(), a2.is_literal(), b2.is_literal()) {
-            (true, true, true, false) => -1
-            (true, true, false, true) => 1
-            (true, false, _, _) => -1
-            (false, true, _, _) => 1
-            // _ => a1.cmp(b1)
-            _ => a1.compare(b1)
-          }
-        },
-      )
+      items.sort_by(fn(left, right) {
+        let (a1, a2) = left
+        let (b1, b2) = right
+        match
+          (a1.is_literal(), b1.is_literal(), a2.is_literal(), b2.is_literal()) {
+          (true, true, true, false) => -1
+          (true, true, false, true) => 1
+          (true, false, _, _) => -1
+          (false, true, _, _) => 1
+          // _ => a1.cmp(b1)
+          _ => a1.compare(b1)
+        }
+      })
       for pair in items.iter() {
         let (k, v) = pair
         ys.push(
-          @cirru_parser.Cirru::List(
-            [assemble_cirru_node!(k), assemble_cirru_node!(v)],
-          ),
+          @cirru_parser.Cirru::List([
+            assemble_cirru_node!(k),
+            assemble_cirru_node!(v),
+          ]),
         )
       }
       @cirru_parser.Cirru::List(ys)
@@ -319,26 +324,22 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru!EdnCommonError {
       ys.push(@cirru_parser.Cirru::Leaf("%{}"))
       ys.push(@cirru_parser.Cirru::Leaf(":" + name._))
       let ordered_entries = entries
-      ordered_entries.sort_by(
-        fn(left, right) {
-          let (_a1, a2) = left
-          let (_b1, b2) = right
-          match (a2.is_literal(), b2.is_literal()) {
-            (true, false) => -1
-            (false, true) => 1
-            _ => 0
-          }
-        },
-      )
+      ordered_entries.sort_by(fn(left, right) {
+        let (_a1, a2) = left
+        let (_b1, b2) = right
+        match (a2.is_literal(), b2.is_literal()) {
+          (true, false) => -1
+          (false, true) => 1
+          _ => 0
+        }
+      })
       for entry in ordered_entries {
         let v = entry.1
         ys.push(
-          @cirru_parser.Cirru::List(
-            [
-              @cirru_parser.Cirru::Leaf(":" + entry.0._),
-              assemble_cirru_node!(v),
-            ],
-          ),
+          @cirru_parser.Cirru::List([
+            @cirru_parser.Cirru::Leaf(":" + entry.0._),
+            assemble_cirru_node!(v),
+          ]),
         )
       }
       @cirru_parser.Cirru::List(ys)
@@ -366,6 +367,12 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru!EdnCommonError {
       @cirru_parser.Cirru::List(ys)
     }
     // Edn::AnyRef(..) => unreachable!("AnyRef is not serializable"),
+    Edn::Atom(v) => {
+      let ys : Array[@cirru_parser.Cirru] = []
+      ys.push(@cirru_parser.Cirru::Leaf("atom"))
+      ys.push(assemble_cirru_node!(v))
+      @cirru_parser.Cirru::List(ys)
+    }
   }
 }
 
@@ -376,9 +383,10 @@ pub fn format(data : Edn, use_inline : Bool) -> String!EdnCommonError {
     @cirru_parser.Cirru::Leaf(s) =>
       @cirru_parser.format?(
         [
-          @cirru_parser.Cirru::List(
-            [@cirru_parser.Cirru::Leaf("do"), @cirru_parser.Cirru::Leaf(s)],
-          ),
+          @cirru_parser.Cirru::List([
+            @cirru_parser.Cirru::Leaf("do"),
+            @cirru_parser.Cirru::Leaf(s),
+          ]),
         ],
         options,
       )
