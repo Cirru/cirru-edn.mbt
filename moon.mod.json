@@ -1,6 +1,6 @@
 {
   "name": "tiye/cirru-edn",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "deps": {
     "tiye/cirru-parser": "0.0.10"
   },
