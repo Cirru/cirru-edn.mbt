@@ -2,7 +2,9 @@
 type EdnListView Array[Edn] derive(Eq)
 
 ///|
-impl Hash for EdnListView with hash(self) { self._.length() }
+impl Hash for EdnListView with hash(self) {
+  self._.length()
+}
 
 ///|
 impl Hash for EdnListView with hash_combine(self, hasher) {
@@ -12,7 +14,7 @@ impl Hash for EdnListView with hash_combine(self, hasher) {
 }
 
 ///|
-fn to_string(self : EdnListView) -> String {
+fn EdnListView::to_string(self : EdnListView) -> String {
   let mut s = ""
   s = s + "(list )"
   for i = 0, len = self._.length(); i < len; i = i + 1 {
@@ -26,7 +28,7 @@ fn to_string(self : EdnListView) -> String {
 }
 
 ///|
-fn compare(self : EdnListView, right : EdnListView) -> Int {
+fn EdnListView::compare(self : EdnListView, right : EdnListView) -> Int {
   for i = 0, len = self._.length(); i < len; i = i + 1 {
     if i >= right._.length() {
       return 1
@@ -48,7 +50,7 @@ fn EdnListView::default() -> EdnListView {
 }
 
 ///|
-fn get(self : EdnListView, idx : UInt) -> Edn? {
+fn EdnListView::get(self : EdnListView, idx : UInt) -> Edn? {
   if idx < self._.length().reinterpret_as_uint() {
     Some(self._[idx.reinterpret_as_int()])
   } else {
@@ -57,7 +59,7 @@ fn get(self : EdnListView, idx : UInt) -> Edn? {
 }
 
 ///|
-fn get_or_nil(self : EdnListView, idx : UInt) -> Edn {
+fn EdnListView::get_or_nil(self : EdnListView, idx : UInt) -> Edn {
   if idx < self._.length().reinterpret_as_uint() {
     self._[idx.reinterpret_as_int()]
   } else {
@@ -66,12 +68,12 @@ fn get_or_nil(self : EdnListView, idx : UInt) -> Edn {
 }
 
 ///|
-fn length(self : EdnListView) -> UInt {
+fn EdnListView::length(self : EdnListView) -> UInt {
   self._.length().reinterpret_as_uint()
 }
 
 ///|
-fn is_empty(self : EdnListView) -> Bool {
+fn EdnListView::is_empty(self : EdnListView) -> Bool {
   self._.length() == 0
 }
 
@@ -81,16 +83,14 @@ fn push(self : EdnListView, x : Edn) -> Unit {
 }
 
 ///| implement iterator for EdnListView
-fn iter(self : EdnListView) -> Iter[Edn] {
-  Iter::new(
-    fn(yielding) {
-      for i = 0, len = self._.length(); i < len; i = i + 1 {
-        if yielding(self._[i]) == IterEnd {
-          break IterEnd
-        }
-      } else {
-        IterContinue
+fn EdnListView::iter(self : EdnListView) -> Iter[Edn] {
+  Iter::new(fn(yielding) {
+    for i = 0, len = self._.length(); i < len; i = i + 1 {
+      if yielding(self._[i]) == IterEnd {
+        break IterEnd
       }
-    },
-  )
+    } else {
+      IterContinue
+    }
+  })
 }

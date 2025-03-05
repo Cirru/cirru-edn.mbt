@@ -2,7 +2,7 @@
 pub(all) type! EdnCommonError String derive(Eq, Hash, Default)
 
 ///|
-pub fn to_string(self : EdnCommonError) -> String {
+pub fn EdnCommonError::to_string(self : EdnCommonError) -> String {
   match self {
     EdnCommonError(s) => s
   }
@@ -38,7 +38,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
         s1 =>
           match s1[0] {
             '\'' => Symbol(s1.substring(start=1))
-            ':' => tag(s1.substring(start=1))
+            ':' => Edn::tag(s1.substring(start=1))
             '"' | '|' => Str(s1.substring(start=1))
             _ =>
               match @strconv.parse_double?(s1.trim(" ")) {

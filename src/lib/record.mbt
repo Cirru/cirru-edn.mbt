@@ -5,7 +5,9 @@ pub(all) struct EdnRecordView {
 } derive(Eq)
 
 ///|
-impl Hash for EdnRecordView with hash(self) { self.extra.length() + 1 }
+impl Hash for EdnRecordView with hash(self) {
+  self.extra.length() + 1
+}
 
 ///|
 impl Hash for EdnRecordView with hash_combine(self, hasher) {
@@ -17,7 +19,7 @@ impl Hash for EdnRecordView with hash_combine(self, hasher) {
 }
 
 ///|
-pub fn to_string(self : EdnRecordView) -> String {
+pub fn EdnRecordView::to_string(self : EdnRecordView) -> String {
   let mut s = ""
   s = s + "(record"
   s = s + self.tag.to_string()
@@ -37,7 +39,7 @@ fn EdnRecordView::new(
 }
 
 ///|
-fn has_key(self : EdnRecordView, key : EdnTag) -> Bool {
+fn EdnRecordView::has_key(self : EdnRecordView, key : EdnTag) -> Bool {
   for i = 0, len = self.extra.length(); i < len; i = i + 1 {
     if self.extra[i].0 == key {
       return true
@@ -47,12 +49,16 @@ fn has_key(self : EdnRecordView, key : EdnTag) -> Bool {
 }
 
 ///| order not guaranteed yet, better be sorted before used by runtime
-fn insert(self : EdnRecordView, key : EdnTag, value : Edn) -> Unit {
+fn EdnRecordView::insert(
+  self : EdnRecordView,
+  key : EdnTag,
+  value : Edn
+) -> Unit {
   self.extra.push((key, value))
 }
 
 ///|
-fn compare(self : EdnRecordView, right : EdnRecordView) -> Int {
+fn EdnRecordView::compare(self : EdnRecordView, right : EdnRecordView) -> Int {
   let len = self.extra.length()
   let right_len = right.extra.length()
   if len < right_len {

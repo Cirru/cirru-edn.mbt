@@ -2,8 +2,13 @@
 type EdnTag String derive(Eq, Hash)
 
 ///|
-fn to_string(self : EdnTag) -> String {
+fn EdnTag::to_string(self : EdnTag) -> String {
   self._
+}
+
+///|
+impl Show for EdnTag with output(self, logger) {
+  logger.write_string(self.to_string())
 }
 
 ///|

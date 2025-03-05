@@ -10,7 +10,9 @@ pub fn EdnTupleView::new(tag : Edn, extra : Array[Edn]) -> EdnTupleView {
 }
 
 ///|
-impl Hash for EdnTupleView with hash(self) { self.extra.length() + 1 }
+impl Hash for EdnTupleView with hash(self) {
+  self.extra.length() + 1
+}
 
 ///|
 impl Hash for EdnTupleView with hash_combine(self, hasher) {
@@ -21,7 +23,7 @@ impl Hash for EdnTupleView with hash_combine(self, hasher) {
 }
 
 ///|
-pub fn to_string(self : EdnTupleView) -> String {
+pub fn EdnTupleView::to_string(self : EdnTupleView) -> String {
   let mut s = ""
   s = s + "(tuple"
   s = s + self.tag.to_string()
@@ -33,7 +35,7 @@ pub fn to_string(self : EdnTupleView) -> String {
 }
 
 ///|
-pub fn compare(self : EdnTupleView, right : EdnTupleView) -> Int {
+pub fn EdnTupleView::compare(self : EdnTupleView, right : EdnTupleView) -> Int {
   let ret = self.tag.compare(right.tag)
   if ret != 0 {
     return ret

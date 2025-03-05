@@ -24,7 +24,7 @@ pub(all) enum Edn {
 } derive(Eq, Hash, Default)
 
 ///|
-pub fn to_string(self : Edn) -> String {
+pub fn Edn::to_string(self : Edn) -> String {
   match self {
     Nil => "nil".to_string()
     Tag(t) => t.to_string()
@@ -64,7 +64,7 @@ pub impl Show for Edn with output(self, logger) -> Unit {
 // TODO Hash
 
 ///|
-pub fn compare(self : Edn, right : Edn) -> Int {
+pub fn Edn::compare(self : Edn, right : Edn) -> Int {
   let ret = match (self, right) {
     (Nil, Nil) => 0
     (Nil, _) => -1
