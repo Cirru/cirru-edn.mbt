@@ -14,7 +14,7 @@ impl Hash for EdnBufferView with hash_combine(self, hasher) {
 }
 
 ///|
-fn EdnBufferView::to_string(self : EdnBufferView) -> String {
+impl Show for EdnBufferView with output(self, logger) {
   let mut s = ""
   s = s + "["
   for i = 0, len = self._.length(); i < len; i = i + 1 {
@@ -24,11 +24,14 @@ fn EdnBufferView::to_string(self : EdnBufferView) -> String {
     s = s + self._[i].to_string()
   }
   s = s + "]"
-  s
+  logger.write_string(s)
 }
 
 ///|
-fn EdnBufferView::compare(self : EdnBufferView, right : EdnBufferView) -> Int {
+impl Compare for EdnBufferView with compare(
+  self : EdnBufferView,
+  right : EdnBufferView
+) -> Int {
   for i = 0, len = self._.length(); i < len; i = i + 1 {
     if i >= right._.length() {
       return 1

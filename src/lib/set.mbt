@@ -1,11 +1,11 @@
 //
 
 ///|
-type EdnSetView @hashset.T[Edn]
+pub type EdnSetView @hashset.T[Edn]
 
 ///| implement Eq for EdnSetView,
 /// TODO: this is not efficient, we should implement a more efficient way to compare two sets
-impl Eq for EdnSetView with op_equal(self : EdnSetView, other : EdnSetView) -> Bool {
+pub impl Eq for EdnSetView with op_equal(self : EdnSetView, other : EdnSetView) -> Bool {
   let mut equal = true
   self._.each(fn(x) { if not(other._.contains(x)) { equal = false } })
   if not(equal) {
@@ -16,7 +16,7 @@ impl Eq for EdnSetView with op_equal(self : EdnSetView, other : EdnSetView) -> B
 }
 
 ///|
-fn EdnSetView::to_string(self : EdnSetView) -> String {
+pub fn EdnSetView::to_string(self : EdnSetView) -> String {
   let mut s = ""
   s = s + "(set"
   for i in self._ {
@@ -27,37 +27,37 @@ fn EdnSetView::to_string(self : EdnSetView) -> String {
 }
 
 ///|
-impl Hash for EdnSetView with hash(self) {
+pub impl Hash for EdnSetView with hash(self) {
   self._.size()
 }
 
 ///|
-impl Hash for EdnSetView with hash_combine(self, hasher) {
+pub impl Hash for EdnSetView with hash_combine(self, hasher) {
   self._.each(fn(x) { x.hash_combine(hasher) })
 }
 
 ///|
-fn EdnSetView::contains(self : EdnSetView, x : Edn) -> Bool {
+pub fn EdnSetView::contains(self : EdnSetView, x : Edn) -> Bool {
   self._.contains(x)
 }
 
 ///|
-fn EdnSetView::add(self : EdnSetView, x : Edn) -> Unit {
+pub fn EdnSetView::add(self : EdnSetView, x : Edn) -> Unit {
   self._.add(x)
 }
 
 ///|
-fn EdnSetView::length(self : EdnSetView) -> UInt {
+pub fn EdnSetView::length(self : EdnSetView) -> UInt {
   self._.size().reinterpret_as_uint()
 }
 
 ///|
-fn EdnSetView::is_empty(self : EdnSetView) -> Bool {
+pub fn EdnSetView::is_empty(self : EdnSetView) -> Bool {
   self._.is_empty()
 }
 
 ///|
-fn EdnSetView::compare(self : EdnSetView, right : EdnSetView) -> Int {
+pub impl Compare for EdnSetView with compare(self, right) -> Int {
   if self._.size() < right._.size() {
     return -1
   }

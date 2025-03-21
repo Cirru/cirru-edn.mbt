@@ -2,39 +2,42 @@
 pub(all) type! EdnCommonError String derive(Eq, Hash, Default)
 
 ///|
-pub fn EdnCommonError::to_string(self : EdnCommonError) -> String {
+pub impl Show for EdnCommonError with output(self, logger) {
   match self {
-    EdnCommonError(s) => s
+    EdnCommonError(s) => logger.write_string(s)
   }
 }
 
 ///|
-pub impl Show for EdnCommonError with output(self, logger) {
-  Show::output(self.to_string(), logger)
+impl @strconv.FromStr for Edn with from_string(s) {
+  parse!(s)
 }
 
 ///| parse Cirru code into data
-pub fn parse(s : String) -> Edn!EdnCommonError {
+pub fn parse(s : String) -> Edn!@strconv.StrConvError {
   let xs = @cirru_parser.parse?(s).unwrap()
   if xs.length() == 1 {
     match xs[0] {
-      Leaf(s) => raise EdnCommonError("expected expr for data, got leaf: " + s)
+      Leaf(s) =>
+        raise @strconv.StrConvError("expected expr for data, got leaf: " + s)
       List(_) => extract_cirru_edn!(xs[0])
     }
   } else {
-    raise EdnCommonError("Expected 1 expr for edn, got length \{xs.length()}")
+    raise @strconv.StrConvError(
+      "Expected 1 expr for edn, got length \{xs.length()}",
+    )
   }
 }
 
 ///|
-fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
+fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!@strconv.StrConvError {
   match node {
     Leaf(s) =>
       match s {
         "nil" => Nil
         "true" => Bool(true)
         "false" => Bool(false)
-        "" => raise EdnCommonError("empty string is invalid for edn")
+        "" => raise @strconv.StrConvError("empty string is invalid for edn")
         s1 =>
           match s1[0] {
             '\'' => Symbol(s1.substring(start=1))
@@ -46,14 +49,16 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                 Err(e) =>
                   match e {
                     @strconv.StrConvError(s) =>
-                      raise EdnCommonError("failed to parse number: " + s)
+                      raise @strconv.StrConvError(
+                        "failed to parse number: " + s,
+                      )
                   }
               }
           }
       }
     List(xs) =>
       if xs.is_empty() {
-        raise EdnCommonError("empty expr is invalid for edn")
+        raise @strconv.StrConvError("empty expr is invalid for edn")
       } else {
         // println("extracting list: " + xs.to_string())
         match xs[0] {
@@ -63,7 +68,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                 if xs.length() == 2 {
                   Quote(xs[1])
                 } else {
-                  raise EdnCommonError("missing edn quote value")
+                  raise @strconv.StrConvError("missing edn quote value")
                 }
               "do" => {
                 let mut ret : Edn? = None
@@ -72,21 +77,22 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                     continue
                   }
                   match ret {
-                    Some(_) => raise EdnCommonError("multiple values in do")
+                    Some(_) =>
+                      raise @strconv.StrConvError("multiple values in do")
                     None => ret = Some(extract_cirru_edn!(x))
                   }
                 }
                 match ret {
-                  None => raise EdnCommonError("missing edn do value")
+                  None => raise @strconv.StrConvError("missing edn do value")
                   Some(_v) => ()
                 }
-                ret.or_error!(EdnCommonError("missing edn do value"))
+                ret.or_error!(@strconv.StrConvError("missing edn do value"))
               }
               "atom" =>
                 if xs.length() == 2 {
                   Atom(extract_cirru_edn!(xs[1]))
                 } else {
-                  raise EdnCommonError("missing edn atom value")
+                  raise @strconv.StrConvError("missing edn atom value")
                 }
               "::" => {
                 let mut tag : Edn? = None
@@ -105,7 +111,8 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                 }
                 match tag {
                   Some(x0) => Tuple({ tag: x0, extra })
-                  None => raise EdnCommonError("missing edn :: fst value")
+                  None =>
+                    raise @strconv.StrConvError("missing edn :: fst value")
                 }
               }
               "[]" => {
@@ -116,7 +123,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                   }
                   match extract_cirru_edn?(x) {
                     Ok(v) => ys.push(v)
-                    Err(v) => raise EdnCommonError(v.to_string())
+                    Err(v) => raise @strconv.StrConvError(v.to_string())
                   }
                 }
                 List(EdnListView(ys))
@@ -129,7 +136,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                   }
                   match extract_cirru_edn?(x) {
                     Ok(v) => ys.add(v)
-                    Err(v) => raise EdnCommonError(v.to_string())
+                    Err(v) => raise @strconv.StrConvError(v.to_string())
                   }
                 }
                 Edn::Set(EdnSetView(ys))
@@ -142,7 +149,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                   }
                   match x {
                     Leaf(s) =>
-                      raise EdnCommonError(
+                      raise @strconv.StrConvError(
                         "expected a pair, invalid map entry: " + s,
                       )
                     List(ys) =>
@@ -151,11 +158,11 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                           (extract_cirru_edn?(ys[0]), extract_cirru_edn?(ys[1])) {
                           (Ok(k), Ok(v)) => zs.set(k, v)
                           (Err(e), _) =>
-                            raise EdnCommonError(
+                            raise @strconv.StrConvError(
                               "invalid map entry `\{e}` from `\{ys[0]}`",
                             )
                           (Ok(k), Err(e)) =>
-                            raise EdnCommonError(
+                            raise @strconv.StrConvError(
                               "invalid map entry for `\{k}`, got \{e}",
                             )
                         }
@@ -169,7 +176,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                   let name = match xs[1] {
                     Leaf(s) => EdnTag::new(s.trim_start(":"))
                     List(e) =>
-                      raise EdnCommonError(
+                      raise @strconv.StrConvError(
                         "expected record name in string: " + e.to_string(),
                       )
                   }
@@ -180,7 +187,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                     }
                     match x {
                       Leaf(s) =>
-                        raise EdnCommonError(
+                        raise @strconv.StrConvError(
                           "expected record, invalid record entry: " + s,
                         )
                       List(ys) =>
@@ -189,27 +196,29 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                             (Leaf(s), Ok(v)) =>
                               entries.push((EdnTag::new(s.trim_start(":")), v))
                             (Leaf(s), Err(e)) =>
-                              raise EdnCommonError(
+                              raise @strconv.StrConvError(
                                 "invalid record value for `\{s}`, got: \{e}",
                               )
                             (List(zs), _) =>
-                              raise EdnCommonError(
+                              raise @strconv.StrConvError(
                                 "invalid list as record key: \{zs}",
                               )
                           }
                         } else {
-                          raise EdnCommonError(
+                          raise @strconv.StrConvError(
                             "expected pair of 2: " + ys.to_string(),
                           )
                         }
                     }
                   }
                   if entries.is_empty() {
-                    raise EdnCommonError("empty record is invalid")
+                    raise @strconv.StrConvError("empty record is invalid")
                   }
                   Edn::Record({ tag: name, extra: entries })
                 } else {
-                  raise EdnCommonError("insufficient items for edn record")
+                  raise @strconv.StrConvError(
+                    "insufficient items for edn record",
+                  )
                 }
               "buf" => {
                 let ys : Array[UInt] = []
@@ -225,28 +234,30 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!EdnCommonError {
                           Err(e) =>
                             match e {
                               @strconv.StrConvError(s) =>
-                                raise EdnCommonError(
+                                raise @strconv.StrConvError(
                                   "expected length 2 hex string in buffer, got: \{y} \{s}",
                                 )
                             }
                         }
                       } else {
-                        raise EdnCommonError(
+                        raise @strconv.StrConvError(
                           "expected length 2 hex string in buffer, got: \{y}",
                         )
                       }
                     _ =>
-                      raise EdnCommonError(
+                      raise @strconv.StrConvError(
                         "expected hex string in buffer, got: " + x.to_string(),
                       )
                   }
                 }
                 Edn::Buffer(ys)
               }
-              a => raise EdnCommonError("invalid operator for edn: " + a)
+              a => raise @strconv.StrConvError("invalid operator for edn: " + a)
             }
           List(a) =>
-            raise EdnCommonError("invalid nodes for edn: " + a.to_string())
+            raise @strconv.StrConvError(
+              "invalid nodes for edn: " + a.to_string(),
+            )
         }
       }
   }

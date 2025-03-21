@@ -14,7 +14,7 @@ impl Hash for EdnListView with hash_combine(self, hasher) {
 }
 
 ///|
-fn EdnListView::to_string(self : EdnListView) -> String {
+impl Show for EdnListView with output(self, logger) {
   let mut s = ""
   s = s + "(list )"
   for i = 0, len = self._.length(); i < len; i = i + 1 {
@@ -24,11 +24,11 @@ fn EdnListView::to_string(self : EdnListView) -> String {
     s = s + self._[i].to_string()
   }
   s = s + ")"
-  s
+  logger.write_string(s)
 }
 
 ///|
-fn EdnListView::compare(self : EdnListView, right : EdnListView) -> Int {
+impl Compare for EdnListView with compare(self, right) -> Int {
   for i = 0, len = self._.length(); i < len; i = i + 1 {
     if i >= right._.length() {
       return 1
@@ -45,7 +45,7 @@ fn EdnListView::compare(self : EdnListView, right : EdnListView) -> Int {
 }
 
 ///|
-fn EdnListView::default() -> EdnListView {
+impl Default for EdnListView with default() -> EdnListView {
   []
 }
 

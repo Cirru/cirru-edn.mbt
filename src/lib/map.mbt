@@ -37,14 +37,14 @@ impl Hash for EdnMapView with hash_combine(self, hasher) {
 }
 
 ///|
-fn EdnMapView::to_string(self : EdnMapView) -> String {
+impl Show for EdnMapView with output(self, logger) {
   let mut s = ""
   s = s + "(map"
   self._.each(fn(k, v) {
     s = s + " (" + k.to_string() + " " + v.to_string() + ")"
   })
   s = s + ")"
-  s
+  logger.write_string(s)
 }
 
 ///|
@@ -91,7 +91,7 @@ fn EdnMapView::is_empty(self : EdnMapView) -> Bool {
 }
 
 ///|
-fn EdnMapView::compare(self : EdnMapView, right : EdnMapView) -> Int {
+impl Compare for EdnMapView with compare(self, right) -> Int {
   if self._.size() < right._.size() {
     return -1
   }
