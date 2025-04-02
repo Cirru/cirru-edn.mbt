@@ -1,9 +1,4 @@
 ///|
-pub fn hello() -> String {
-  "Hello, world!"
-}
-
-///|
 pub(all) enum Edn {
   Nil
   Bool(Bool)
@@ -24,8 +19,8 @@ pub(all) enum Edn {
 } derive(Eq, Hash, Default)
 
 ///|
-pub fn to_string(self : Edn) -> String {
-  match self {
+pub impl Show for Edn with output(self, logger) {
+  let s = match self {
     Nil => "nil".to_string()
     Tag(t) => t.to_string()
     Bool(b) => if b { "true" } else { "false" }
@@ -54,17 +49,13 @@ pub fn to_string(self : Edn) -> String {
     Record(r) => r.to_string()
     Atom(a) => "atom " + a.to_string()
   }
-}
-
-///|
-pub impl Show for Edn with output(self, logger) -> Unit {
-  logger.write_string(self.to_string())
+  logger.write_string(s)
 }
 
 // TODO Hash
 
 ///|
-pub fn compare(self : Edn, right : Edn) -> Int {
+pub impl Compare for Edn with compare(self : Edn, right : Edn) -> Int {
   let ret = match (self, right) {
     (Nil, Nil) => 0
     (Nil, _) => -1
