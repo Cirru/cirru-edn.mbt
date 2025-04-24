@@ -1,0 +1,101 @@
+package "tiye/cirru-edn/lib"
+
+import(
+  "moonbitlang/core/hashset"
+  "moonbitlang/core/strconv"
+)
+
+// Values
+fn format(Edn, Bool) -> String!EdnCommonError
+
+fn parse(String) -> Edn!@strconv.StrConvError
+
+// Types and methods
+pub(all) enum Edn {
+  Nil
+  Bool(Bool)
+  Number(Double)
+  Symbol(String)
+  Tag(EdnTag)
+  Str(String)
+  Quote(@tiye/cirru-parser/lib.Cirru)
+  Tuple(EdnTupleView)
+  List(EdnListView)
+  Set(EdnSetView)
+  Map(EdnMapView)
+  Record(EdnRecordView)
+  Buffer(EdnBufferView)
+  Atom(Edn)
+}
+impl Edn {
+  is_literal(Self) -> Bool
+  str(String) -> Self
+  symbol(String) -> Self
+  tag(String) -> Self
+  tuple(Self, Array[Self]) -> Self
+}
+impl Compare for Edn
+impl Default for Edn
+impl Eq for Edn
+impl Hash for Edn
+impl Show for Edn
+
+type EdnBufferView
+impl Eq for EdnBufferView
+
+pub(all) type! EdnCommonError String
+impl Default for EdnCommonError
+impl Eq for EdnCommonError
+impl Hash for EdnCommonError
+impl Show for EdnCommonError
+
+type EdnListView
+impl Eq for EdnListView
+
+type EdnMapView
+
+pub(all) struct EdnRecordView {
+  tag : EdnTag
+  extra : Array[(EdnTag, Edn)]
+}
+impl Eq for EdnRecordView
+impl Show for EdnRecordView
+
+pub type EdnSetView @hashset.T[Edn]
+impl EdnSetView {
+  add(Self, Edn) -> Unit
+  contains(Self, Edn) -> Bool
+  is_empty(Self) -> Bool
+  length(Self) -> UInt
+  to_string(Self) -> String
+}
+impl Compare for EdnSetView
+impl Eq for EdnSetView
+impl Hash for EdnSetView
+
+pub type EdnTag String
+impl EdnTag {
+  new(String) -> Self
+  str(Self) -> String
+}
+impl Compare for EdnTag
+impl Eq for EdnTag
+impl Hash for EdnTag
+impl Show for EdnTag
+
+pub(all) struct EdnTupleView {
+  tag : Edn
+  extra : Array[Edn]
+}
+impl EdnTupleView {
+  new(Edn, Array[Edn]) -> Self
+}
+impl Compare for EdnTupleView
+impl Eq for EdnTupleView
+impl Hash for EdnTupleView
+impl Show for EdnTupleView
+
+// Type aliases
+
+// Traits
+
