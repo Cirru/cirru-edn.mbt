@@ -44,7 +44,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!@strconv.StrConvError {
             ':' => Edn::tag(s1.substring(start=1))
             '"' | '|' => Str(s1.substring(start=1))
             _ =>
-              match @strconv.parse_double?(s1.trim(" ")) {
+              match @strconv.parse_double?(s1.trim(" ").to_string()) {
                 Ok(f) => Number(f)
                 Err(e) =>
                   match e {
@@ -174,7 +174,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!@strconv.StrConvError {
               "%{}" =>
                 if xs.length() >= 3 {
                   let name = match xs[1] {
-                    Leaf(s) => EdnTag::new(s.trim_start(":"))
+                    Leaf(s) => EdnTag::new(s.trim_start(":").to_string())
                     List(e) =>
                       raise @strconv.StrConvError(
                         "expected record name in string: " + e.to_string(),
@@ -194,7 +194,7 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!@strconv.StrConvError {
                         if ys.length() == 2 {
                           match (ys[0], extract_cirru_edn?(ys[1])) {
                             (Leaf(s), Ok(v)) =>
-                              entries.push((EdnTag::new(s.trim_start(":")), v))
+                              entries.push((EdnTag::new(s.trim_start(":").to_string()), v))
                             (Leaf(s), Err(e)) =>
                               raise @strconv.StrConvError(
                                 "invalid record value for `\{s}`, got: \{e}",
