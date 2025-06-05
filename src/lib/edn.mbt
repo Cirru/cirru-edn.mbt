@@ -22,7 +22,7 @@ pub(all) enum Edn {
   Atom(Edn)
 } derive(Eq, Hash, Default)
 
-///|
+///| for debugging. use `format!` if you want to generate in Cirru format
 pub impl Show for Edn with output(self, logger) {
   let s = match self {
     Nil => "nil".to_string()

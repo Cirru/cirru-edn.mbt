@@ -5,7 +5,7 @@ typealias @cirru_parser.Cirru
 pub(all) type! EdnCommonError String derive(Eq, Hash, Default, Show)
 
 ///|
-impl @strconv.FromStr for Edn with from_string(s) {
+pub impl @strconv.FromStr for Edn with from_string(s) {
   Edn::parse!(s)
 }
 
@@ -368,7 +368,7 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru!EdnCommonError {
   }
 }
 
-///| generate string from Edn
+///| generate Cirru code from Edn
 pub fn Edn::format(data : Self, use_inline? : Bool) -> String!EdnCommonError {
   let options : @cirru_parser.CirruWriterOptions = {
     use_inline: use_inline.or(false),
