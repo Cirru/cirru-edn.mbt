@@ -1,21 +1,17 @@
 ///|
-pub(all) type! EdnCommonError String derive(Eq, Hash, Default)
+typealias @cirru_parser.Cirru
 
 ///|
-pub impl Show for EdnCommonError with output(self, logger) {
-  match self {
-    EdnCommonError(s) => logger.write_string(s)
-  }
-}
+pub(all) type! EdnCommonError String derive(Eq, Hash, Default, Show)
 
 ///|
 impl @strconv.FromStr for Edn with from_string(s) {
-  parse!(s)
+  Edn::parse!(s)
 }
 
 ///| parse Cirru code into data
-pub fn parse(s : String) -> Edn!@strconv.StrConvError {
-  let xs = @cirru_parser.parse?(s).unwrap()
+pub fn Edn::parse(s : String) -> Edn!@strconv.StrConvError {
+  let xs = Cirru::parse?(s).unwrap()
   if xs.length() == 1 {
     match xs[0] {
       Leaf(s) =>
@@ -39,9 +35,9 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!@strconv.StrConvError {
         "false" => Bool(false)
         "" => raise @strconv.StrConvError("empty string is invalid for edn")
         s1 =>
-          match s1[0] {
+          match s1.char_at(0) {
             '\'' => Symbol(s1.substring(start=1))
-            ':' => Edn::tag(s1.substring(start=1))
+            ':' => Tag(s1.substring(start=1))
             '"' | '|' => Str(s1.substring(start=1))
             _ =>
               match @strconv.parse_double?(s1.trim(" ").to_string()) {
@@ -194,7 +190,9 @@ fn extract_cirru_edn(node : @cirru_parser.Cirru) -> Edn!@strconv.StrConvError {
                         if ys.length() == 2 {
                           match (ys[0], extract_cirru_edn?(ys[1])) {
                             (Leaf(s), Ok(v)) =>
-                              entries.push((EdnTag::new(s.trim_start(":").to_string()), v))
+                              entries.push(
+                                (EdnTag::new(s.trim_start(":").to_string()), v),
+                              )
                             (Leaf(s), Err(e)) =>
                               raise @strconv.StrConvError(
                                 "invalid record value for `\{s}`, got: \{e}",
@@ -371,11 +369,13 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru!EdnCommonError {
 }
 
 ///| generate string from Edn
-pub fn format(data : Edn, use_inline : Bool) -> String!EdnCommonError {
-  let options : @cirru_parser.CirruWriterOptions = { use_inline, }
+pub fn Edn::format(data : Self, use_inline? : Bool) -> String!EdnCommonError {
+  let options : @cirru_parser.CirruWriterOptions = {
+    use_inline: use_inline.or(false),
+  }
   let ret = match assemble_cirru_node!(data) {
-    Leaf(s) => @cirru_parser.format?([List([Leaf("do"), Leaf(s)])], options)
-    List(xs) => @cirru_parser.format?([List(xs)], options)
+    Leaf(s) => Cirru::format?([List([Leaf("do"), Leaf(s)])], options)
+    List(xs) => Cirru::format?([List(xs)], options)
   }
   match ret {
     Ok(s) => s
