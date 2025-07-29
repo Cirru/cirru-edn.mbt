@@ -38,7 +38,7 @@ fn EdnRecordView::new(
   { tag, extra }
 }
 
-///|
+///| determines if the record has a key
 fn EdnRecordView::has_key(self : EdnRecordView, key : EdnTag) -> Bool {
   for i = 0, len = self.extra.length(); i < len; i = i + 1 {
     if self.extra[i].0 == key {

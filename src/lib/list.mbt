@@ -78,7 +78,7 @@ fn EdnListView::is_empty(self : EdnListView) -> Bool {
 }
 
 ///| mutablely push an element to the end of the list
-fn push(self : EdnListView, x : Edn) -> Unit {
+fn EdnListView::push(self : EdnListView, x : Edn) -> Unit {
   self._.push(x)
 }
 

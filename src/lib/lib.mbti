@@ -6,9 +6,6 @@ import(
 )
 
 // Values
-fn format(Edn, Bool) -> String!EdnCommonError
-
-fn parse(String) -> Edn!@strconv.StrConvError
 
 // Types and methods
 pub(all) enum Edn {
@@ -27,18 +24,22 @@ pub(all) enum Edn {
   Buffer(EdnBufferView)
   Atom(Edn)
 }
-impl Edn {
-  is_literal(Self) -> Bool
-  str(String) -> Self
-  symbol(String) -> Self
-  tag(String) -> Self
-  tuple(Self, Array[Self]) -> Self
-}
+fn Edn::format(Self, use_inline? : Bool) -> String!EdnCommonError
+fn Edn::is_literal(Self) -> Bool
+fn Edn::parse(String) -> Self!@strconv.StrConvError
+#deprecated
+fn Edn::str(String) -> Self
+#deprecated
+fn Edn::symbol(String) -> Self
+#deprecated
+fn Edn::tag(String) -> Self
+fn Edn::tuple(Self, Array[Self]) -> Self
 impl Compare for Edn
 impl Default for Edn
 impl Eq for Edn
 impl Hash for Edn
 impl Show for Edn
+impl @strconv.FromStr for Edn
 
 type EdnBufferView
 impl Eq for EdnBufferView
@@ -62,22 +63,17 @@ impl Eq for EdnRecordView
 impl Show for EdnRecordView
 
 pub type EdnSetView @hashset.T[Edn]
-impl EdnSetView {
-  add(Self, Edn) -> Unit
-  contains(Self, Edn) -> Bool
-  is_empty(Self) -> Bool
-  length(Self) -> UInt
-  to_string(Self) -> String
-}
+fn EdnSetView::add(Self, Edn) -> Unit
+fn EdnSetView::contains(Self, Edn) -> Bool
+fn EdnSetView::is_empty(Self) -> Bool
+fn EdnSetView::length(Self) -> UInt
 impl Compare for EdnSetView
 impl Eq for EdnSetView
 impl Hash for EdnSetView
 
 pub type EdnTag String
-impl EdnTag {
-  new(String) -> Self
-  str(Self) -> String
-}
+fn EdnTag::new(String) -> Self
+fn EdnTag::str(Self) -> String
 impl Compare for EdnTag
 impl Eq for EdnTag
 impl Hash for EdnTag
@@ -87,9 +83,7 @@ pub(all) struct EdnTupleView {
   tag : Edn
   extra : Array[Edn]
 }
-impl EdnTupleView {
-  new(Edn, Array[Edn]) -> Self
-}
+fn EdnTupleView::new(Edn, Array[Edn]) -> Self
 impl Compare for EdnTupleView
 impl Eq for EdnTupleView
 impl Hash for EdnTupleView

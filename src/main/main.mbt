@@ -1,4 +1,7 @@
 ///|
+typealias @lib.Edn
+
+///|
 let demo =
   #|{}
   #|  :a $ {}
@@ -10,15 +13,15 @@ let demo =
 
 ///|
 fn main {
-  match @lib.parse?(demo) {
+  match Edn::parse?(demo) {
     Ok(x) => {
       println(x.to_string())
-      println(@lib.format?(x, false).unwrap())
+      println(x.format?(use_inline=false).unwrap())
     }
     Err(e) => println("error:" + e.to_string())
   }
-  let v = @lib.format?(@lib.Edn::Atom(@lib.Edn::Number(1.0)), true).unwrap()
+  let v = Edn::Atom(@lib.Edn::Number(1.0)).format?(use_inline=true).unwrap()
   println(v)
-  let parsed = @lib.parse?("atom 1").unwrap()
+  let parsed = Edn::parse?("atom 1").unwrap()
   println(parsed.to_string())
 }

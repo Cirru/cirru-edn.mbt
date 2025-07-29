@@ -16,14 +16,14 @@ pub impl Eq for EdnSetView with op_equal(self : EdnSetView, other : EdnSetView) 
 }
 
 ///|
-pub fn EdnSetView::to_string(self : EdnSetView) -> String {
+impl Show for EdnSetView with output(self, logger) {
   let mut s = ""
   s = s + "(set"
   for i in self._ {
     s = s + " " + i.to_string()
   }
   s = s + ")"
-  s
+  logger.write_string(s)
 }
 
 ///|

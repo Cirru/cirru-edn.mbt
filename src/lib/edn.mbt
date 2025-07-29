@@ -1,24 +1,28 @@
-///|
+///| Edn data type, used in Calcit
 pub(all) enum Edn {
   Nil
   Bool(Bool)
   Number(Double)
   Symbol(String)
+  /// a tag, like `:keyword` in Clojure
   Tag(EdnTag)
   Str(String)
-  Quote(@cirru_parser.Cirru)
+  /// quoted Cirru code data
+  Quote(Cirru)
   Tuple(EdnTupleView)
   List(EdnListView)
   Set(EdnSetView)
   Map(EdnMapView)
+  /// a record, like `#my/record` in Clojure
   Record(EdnRecordView)
   Buffer(EdnBufferView)
   /// reference to Rust data, not interpretable in Calcit
   // AnyRef(EdnAnyRef)
+  /// a reference to a Calcit atom, like `@my/atom` in Clojure
   Atom(Edn)
 } derive(Eq, Hash, Default)
 
-///|
+///| for debugging. use `format!` if you want to generate in Cirru format
 pub impl Show for Edn with output(self, logger) {
   let s = match self {
     Nil => "nil".to_string()
@@ -104,16 +108,19 @@ pub impl Compare for Edn with compare(self : Edn, right : Edn) -> Int {
 }
 
 ///|
+#deprecated("use Edn::Str() instead")
 pub fn Edn::str(s : String) -> Edn {
   Edn::Str(s)
 }
 
 ///|
+#deprecated("use Edn::Tag() instead")
 pub fn Edn::tag(s : String) -> Edn {
   Edn::Tag(EdnTag::new(s))
 }
 
 ///|
+#deprecated("use Edn::Symbol() instead")
 pub fn Edn::symbol(s : String) -> Edn {
   Edn::Symbol(s)
 }
