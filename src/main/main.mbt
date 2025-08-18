@@ -13,15 +13,15 @@ let demo =
 
 ///|
 fn main {
-  match Edn::parse?(demo) {
+  match (try? Edn::parse(demo)) {
     Ok(x) => {
       println(x.to_string())
-      println(x.format?(use_inline=false).unwrap())
+      println((try? x.format(use_inline=false)).unwrap())
     }
     Err(e) => println("error:" + e.to_string())
   }
-  let v = Edn::Atom(@lib.Edn::Number(1.0)).format?(use_inline=true).unwrap()
+  let v = (try? Edn::Atom(@lib.Edn::Number(1.0)).format(use_inline=true)).unwrap()
   println(v)
-  let parsed = Edn::parse?("atom 1").unwrap()
+  let parsed = (try? Edn::parse("atom 1")).unwrap()
   println(parsed.to_string())
 }

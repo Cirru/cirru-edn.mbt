@@ -17,7 +17,8 @@ impl Hash for EdnBufferView with hash_combine(self, hasher) {
 impl Show for EdnBufferView with output(self, logger) {
   let mut s = ""
   s = s + "["
-  for i = 0, len = self.inner().length(); i < len; i = i + 1 {
+  let len = self.inner().length()
+  for i = 0; i < len; i = i + 1 {
     if i > 0 {
       s = s + ", "
     }
@@ -32,7 +33,8 @@ impl Compare for EdnBufferView with compare(
   self : EdnBufferView,
   right : EdnBufferView,
 ) -> Int {
-  for i = 0, len = self.inner().length(); i < len; i = i + 1 {
+  let len = self.inner().length()
+  for i = 0; i < len; i = i + 1 {
     if i >= right.inner().length() {
       return 1
     }

@@ -11,7 +11,7 @@ pub impl @strconv.FromStr for Edn with from_string(s) {
 
 ///| parse Cirru code into data
 pub fn Edn::parse(s : String) -> Edn raise @strconv.StrConvError {
-  let xs = Cirru::parse?(s).unwrap()
+  let xs = (try? Cirru::parse(s)).unwrap()
   if xs.length() == 1 {
     match xs[0] {
       Leaf(s) =>
@@ -37,12 +37,12 @@ fn extract_cirru_edn(
         "false" => Bool(false)
         "" => raise @strconv.StrConvError("empty string is invalid for edn")
         s1 =>
-          match s1.char_at(0) {
+          match s1.get_char(0).unwrap() {
             '\'' => Symbol(s1.substring(start=1))
             ':' => Tag(s1.substring(start=1))
             '"' | '|' => Str(s1.substring(start=1))
             _ =>
-              match @strconv.parse_double?(s1.trim(" ").to_string()) {
+              match (try? @strconv.parse_double(s1.trim(" ").to_string())) {
                 Ok(f) => Number(f)
                 Err(e) =>
                   match e {
@@ -119,7 +119,7 @@ fn extract_cirru_edn(
                   if is_comment(x) {
                     continue
                   }
-                  match extract_cirru_edn?(x) {
+                  match (try? extract_cirru_edn(x)) {
                     Ok(v) => ys.push(v)
                     Err(v) => raise @strconv.StrConvError(v.to_string())
                   }
@@ -132,7 +132,7 @@ fn extract_cirru_edn(
                   if is_comment(x) {
                     continue
                   }
-                  match extract_cirru_edn?(x) {
+                  match (try? extract_cirru_edn(x)) {
                     Ok(v) => ys.add(v)
                     Err(v) => raise @strconv.StrConvError(v.to_string())
                   }
@@ -153,7 +153,10 @@ fn extract_cirru_edn(
                     List(ys) =>
                       if ys.length() == 2 {
                         match
-                          (extract_cirru_edn?(ys[0]), extract_cirru_edn?(ys[1])) {
+                          (
+                            try? extract_cirru_edn(ys[0]),
+                            try? extract_cirru_edn(ys[1]),
+                          ) {
                           (Ok(k), Ok(v)) => zs.set(k, v)
                           (Err(e), _) =>
                             raise @strconv.StrConvError(
@@ -190,7 +193,7 @@ fn extract_cirru_edn(
                         )
                       List(ys) =>
                         if ys.length() == 2 {
-                          match (ys[0], extract_cirru_edn?(ys[1])) {
+                          match (ys[0], try? extract_cirru_edn(ys[1])) {
                             (Leaf(s), Ok(v)) =>
                               entries.push(
                                 (EdnTag::new(s.trim_start(":").to_string()), v),
@@ -229,7 +232,7 @@ fn extract_cirru_edn(
                   match x {
                     Leaf(y) =>
                       if y.length() == 2 {
-                        match @strconv.parse_int?(y) {
+                        match (try? @strconv.parse_int(y)) {
                           Ok(b) => ys.push(b.reinterpret_as_uint())
                           Err(e) =>
                             match e {
@@ -376,11 +379,11 @@ pub fn Edn::format(
   use_inline? : Bool,
 ) -> String raise EdnCommonError {
   let options : @cirru_parser.CirruWriterOptions = {
-    use_inline: use_inline.or(false),
+    use_inline: use_inline.unwrap_or(false),
   }
   let ret = match assemble_cirru_node(data) {
-    Leaf(s) => Cirru::format?([List([Leaf("do"), Leaf(s)])], options)
-    List(xs) => Cirru::format?([List(xs)], options)
+    Leaf(s) => try? Cirru::format([List([Leaf("do"), Leaf(s)])], options)
+    List(xs) => try? Cirru::format([List(xs)], options)
   }
   match ret {
     Ok(s) => s

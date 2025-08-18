@@ -7,19 +7,15 @@ pub struct EdnSetView(@hashset.T[Edn])
 /// TODO: this is not efficient, we should implement a more efficient way to compare two sets
 pub impl Eq for EdnSetView with op_equal(self : EdnSetView, other : EdnSetView) -> Bool {
   let mut equal = true
-  self.inner().each(fn(x) {
-    if not(other.inner().contains(x)) {
-      equal = false
-    }
-  })
+  self
+  .inner()
+  .each(fn(x) { if not(other.inner().contains(x)) { equal = false } })
   if not(equal) {
     return false
   }
-  other.inner().each(fn(x) {
-    if not(self.inner().contains(x)) {
-      equal = false
-    }
-  })
+  other
+  .inner()
+  .each(fn(x) { if not(self.inner().contains(x)) { equal = false } })
   equal
 }
 
