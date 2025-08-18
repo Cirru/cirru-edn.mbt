@@ -33,7 +33,7 @@ pub impl Show for EdnRecordView with output(self, logger) {
 ///|
 fn EdnRecordView::new(
   tag : EdnTag,
-  extra : Array[(EdnTag, Edn)]
+  extra : Array[(EdnTag, Edn)],
 ) -> EdnRecordView {
   { tag, extra }
 }
@@ -52,7 +52,7 @@ fn EdnRecordView::has_key(self : EdnRecordView, key : EdnTag) -> Bool {
 fn EdnRecordView::insert(
   self : EdnRecordView,
   key : EdnTag,
-  value : Edn
+  value : Edn,
 ) -> Unit {
   self.extra.push((key, value))
 }

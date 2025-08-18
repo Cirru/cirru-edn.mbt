@@ -1,17 +1,25 @@
 //
 
 ///|
-pub type EdnSetView @hashset.T[Edn]
+pub struct EdnSetView(@hashset.T[Edn])
 
 ///| implement Eq for EdnSetView,
 /// TODO: this is not efficient, we should implement a more efficient way to compare two sets
 pub impl Eq for EdnSetView with op_equal(self : EdnSetView, other : EdnSetView) -> Bool {
   let mut equal = true
-  self._.each(fn(x) { if not(other._.contains(x)) { equal = false } })
+  self.inner().each(fn(x) {
+    if not(other.inner().contains(x)) {
+      equal = false
+    }
+  })
   if not(equal) {
     return false
   }
-  other._.each(fn(x) { if not(self._.contains(x)) { equal = false } })
+  other.inner().each(fn(x) {
+    if not(self.inner().contains(x)) {
+      equal = false
+    }
+  })
   equal
 }
 
@@ -19,7 +27,7 @@ pub impl Eq for EdnSetView with op_equal(self : EdnSetView, other : EdnSetView) 
 impl Show for EdnSetView with output(self, logger) {
   let mut s = ""
   s = s + "(set"
-  for i in self._ {
+  for i in self.inner() {
     s = s + " " + i.to_string()
   }
   s = s + ")"
@@ -28,40 +36,40 @@ impl Show for EdnSetView with output(self, logger) {
 
 ///|
 pub impl Hash for EdnSetView with hash(self) {
-  self._.size()
+  self.inner().size()
 }
 
 ///|
 pub impl Hash for EdnSetView with hash_combine(self, hasher) {
-  self._.each(fn(x) { x.hash_combine(hasher) })
+  self.inner().each(fn(x) { x.hash_combine(hasher) })
 }
 
 ///|
 pub fn EdnSetView::contains(self : EdnSetView, x : Edn) -> Bool {
-  self._.contains(x)
+  self.inner().contains(x)
 }
 
 ///|
 pub fn EdnSetView::add(self : EdnSetView, x : Edn) -> Unit {
-  self._.add(x)
+  self.inner().add(x)
 }
 
 ///|
 pub fn EdnSetView::length(self : EdnSetView) -> UInt {
-  self._.size().reinterpret_as_uint()
+  self.inner().size().reinterpret_as_uint()
 }
 
 ///|
 pub fn EdnSetView::is_empty(self : EdnSetView) -> Bool {
-  self._.is_empty()
+  self.inner().is_empty()
 }
 
 ///|
 pub impl Compare for EdnSetView with compare(self, right) -> Int {
-  if self._.size() < right._.size() {
+  if self.inner().size() < right.inner().size() {
     return -1
   }
-  if self._.size() > right._.size() {
+  if self.inner().size() > right.inner().size() {
     return 1
   }
   // TODO does not compare the order of set elements since set is unordered

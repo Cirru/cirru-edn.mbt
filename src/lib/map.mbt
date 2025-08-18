@@ -1,12 +1,12 @@
 ///|
-type EdnMapView Map[Edn, Edn]
+struct EdnMapView(Map[Edn, Edn])
 
 ///| implement Eq for EdnMapView,
 /// TODO: this is not efficient, we should implement a more efficient way to compare two maps
 impl Eq for EdnMapView with op_equal(self : EdnMapView, other : EdnMapView) -> Bool {
   let mut equal = true
-  self._.each(fn(k, v) {
-    match other._.get(k) {
+  self.inner().each(fn(k, v) {
+    match other.inner().get(k) {
       Some(v2) => if v != v2 { equal = false }
       None => equal = false
     }
@@ -14,8 +14,8 @@ impl Eq for EdnMapView with op_equal(self : EdnMapView, other : EdnMapView) -> B
   if not(equal) {
     return false
   }
-  other._.each(fn(k, v) {
-    match self._.get(k) {
+  other.inner().each(fn(k, v) {
+    match self.inner().get(k) {
       Some(v2) => if v != v2 { equal = false }
       None => equal = false
     }
@@ -25,12 +25,12 @@ impl Eq for EdnMapView with op_equal(self : EdnMapView, other : EdnMapView) -> B
 
 ///|
 impl Hash for EdnMapView with hash(self) {
-  self._.size()
+  self.inner().size()
 }
 
 ///|
 impl Hash for EdnMapView with hash_combine(self, hasher) {
-  self._.each(fn(k, v) {
+  self.inner().each(fn(k, v) {
     k.hash_combine(hasher)
     v.hash_combine(hasher)
   })
@@ -40,7 +40,7 @@ impl Hash for EdnMapView with hash_combine(self, hasher) {
 impl Show for EdnMapView with output(self, logger) {
   let mut s = ""
   s = s + "(map"
-  self._.each(fn(k, v) {
+  self.inner().each(fn(k, v) {
     s = s + " (" + k.to_string() + " " + v.to_string() + ")"
   })
   s = s + ")"
@@ -49,22 +49,22 @@ impl Show for EdnMapView with output(self, logger) {
 
 ///|
 fn EdnMapView::tag_get(self : EdnMapView, k : Edn) -> Edn? {
-  self._.get(k)
+  self.inner().get(k)
 }
 
 ///|
 fn EdnMapView::str_get(self : EdnMapView, k : String) -> Edn? {
-  self._.get(Edn::Str(k))
+  self.inner().get(Edn::Str(k))
 }
 
 ///|
 fn EdnMapView::get(self : EdnMapView, k : Edn) -> Edn? {
-  self._.get(k)
+  self.inner().get(k)
 }
 
 ///|
 fn EdnMapView::get_or_nil(self : EdnMapView, k : Edn) -> Edn {
-  match self._.get(k) {
+  match self.inner().get(k) {
     Some(v) => v
     None => Edn::Nil
   }
@@ -72,30 +72,30 @@ fn EdnMapView::get_or_nil(self : EdnMapView, k : Edn) -> Edn {
 
 ///|
 fn EdnMapView::insert(self : EdnMapView, k : Edn, v : Edn) -> Unit {
-  self._.set(k, v)
+  self.inner().set(k, v)
 }
 
 ///|
 fn EdnMapView::insert_key_str(self : EdnMapView, k : String, v : Edn) -> Unit {
-  self._.set(Edn::Str(k), v)
+  self.inner().set(Edn::Str(k), v)
 }
 
 ///|
 fn EdnMapView::length(self : EdnMapView) -> UInt {
-  self._.size().reinterpret_as_uint()
+  self.inner().size().reinterpret_as_uint()
 }
 
 ///|
 fn EdnMapView::is_empty(self : EdnMapView) -> Bool {
-  self._.is_empty()
+  self.inner().is_empty()
 }
 
 ///|
 impl Compare for EdnMapView with compare(self, right) -> Int {
-  if self._.size() < right._.size() {
+  if self.inner().size() < right.inner().size() {
     return -1
   }
-  if self._.size() > right._.size() {
+  if self.inner().size() > right.inner().size() {
     return 1
   }
   // order of map is not defined, so we need to sort the keys
