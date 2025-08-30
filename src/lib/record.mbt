@@ -33,12 +33,13 @@ pub impl Show for EdnRecordView with output(self, logger) {
 ///|
 fn EdnRecordView::new(
   tag : EdnTag,
-  extra : Array[(EdnTag, Edn)]
+  extra : Array[(EdnTag, Edn)],
 ) -> EdnRecordView {
   { tag, extra }
 }
 
-///| determines if the record has a key
+///|
+/// determines if the record has a key
 fn EdnRecordView::has_key(self : EdnRecordView, key : EdnTag) -> Bool {
   for i = 0, len = self.extra.length(); i < len; i = i + 1 {
     if self.extra[i].0 == key {
@@ -48,11 +49,12 @@ fn EdnRecordView::has_key(self : EdnRecordView, key : EdnTag) -> Bool {
   false
 }
 
-///| order not guaranteed yet, better be sorted before used by runtime
+///|
+/// order not guaranteed yet, better be sorted before used by runtime
 fn EdnRecordView::insert(
   self : EdnRecordView,
   key : EdnTag,
-  value : Edn
+  value : Edn,
 ) -> Unit {
   self.extra.push((key, value))
 }

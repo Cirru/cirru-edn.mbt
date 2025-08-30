@@ -1,4 +1,5 @@
-///| Edn data type, used in Calcit
+///|
+/// Edn data type, used in Calcit
 pub(all) enum Edn {
   Nil
   Bool(Bool)
@@ -22,7 +23,8 @@ pub(all) enum Edn {
   Atom(Edn)
 } derive(Eq, Hash, Default)
 
-///| for debugging. use `format!` if you want to generate in Cirru format
+///|
+/// for debugging. use `format!` if you want to generate in Cirru format
 pub impl Show for Edn with output(self, logger) {
   let s = match self {
     Nil => "nil".to_string()
