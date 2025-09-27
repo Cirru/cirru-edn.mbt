@@ -128,7 +128,7 @@ fn extract_cirru_edn(
                 List(EdnListView(ys))
               }
               "#{}" => {
-                let ys : @hashset.T[Edn] = @hashset.new()
+                let ys : @hashset.HashSet[Edn] = @hashset.new()
                 for x in xs[1:] {
                   if is_comment(x) {
                     continue

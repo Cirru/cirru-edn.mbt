@@ -31,7 +31,7 @@ pub impl Show for EdnRecordView with output(self, logger) {
 }
 
 ///|
-fn EdnRecordView::new(
+pub fn EdnRecordView::new(
   tag : EdnTag,
   extra : Array[(EdnTag, Edn)],
 ) -> EdnRecordView {
@@ -40,8 +40,8 @@ fn EdnRecordView::new(
 
 ///|
 /// determines if the record has a key
-fn EdnRecordView::has_key(self : EdnRecordView, key : EdnTag) -> Bool {
-  for i = 0, len = self.extra.length(); i < len; i = i + 1 {
+pub fn EdnRecordView::has_key(self : EdnRecordView, key : EdnTag) -> Bool {
+  for i = 0; i < self.extra.length(); i = i + 1 {
     if self.extra[i].0 == key {
       return true
     }
@@ -51,7 +51,7 @@ fn EdnRecordView::has_key(self : EdnRecordView, key : EdnTag) -> Bool {
 
 ///|
 /// order not guaranteed yet, better be sorted before used by runtime
-fn EdnRecordView::insert(
+pub fn EdnRecordView::insert(
   self : EdnRecordView,
   key : EdnTag,
   value : Edn,
@@ -69,7 +69,7 @@ impl Compare for EdnRecordView with compare(self, right) -> Int {
   if len > right_len {
     return 1
   }
-  for i = 0, len = len; i < len; i = i + 1 {
+  for i = 0; i < len; i = i + 1 {
     let mut ret = self.extra[i].0.compare(right.extra[i].0)
     if ret != 0 {
       return ret
