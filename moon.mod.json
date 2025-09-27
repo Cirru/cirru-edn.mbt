@@ -1,13 +1,14 @@
 {
   "name": "tiye/cirru-edn",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "deps": {
-    "tiye/cirru-parser": "0.1.0"
+    "tiye/cirru-parser": "0.1.1"
   },
   "readme": "README.md",
   "repository": "https://github.com/Cirru/cirru-edn.mbt",
   "license": "Apache-2.0",
   "keywords": ["cirru", "edn"],
+  "preferred-target": "js",
   "description": "Extensible Data Notation in Cirru",
   "source": "src"
 }
