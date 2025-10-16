@@ -1,12 +1,12 @@
 ///|
-typealias @cirru_parser.Cirru
+using @cirru_parser {type Cirru}
 
 ///|
 pub(all) suberror EdnCommonError String derive(Eq, Hash, Default, Show)
 
 ///|
-pub impl @strconv.FromStr for Edn with from_string(s) {
-  Edn::parse(s)
+pub impl @strconv.FromStr for Edn with from_str(s) {
+  Edn::parse(s.to_string())
 }
 
 ///|
@@ -39,11 +39,12 @@ fn extract_cirru_edn(
         "" => raise @strconv.StrConvError("empty string is invalid for edn")
         s1 =>
           match s1.get_char(0).unwrap() {
-            '\'' => Symbol(s1.substring(start=1))
-            ':' => Tag(s1.substring(start=1))
-            '"' | '|' => Str(s1.substring(start=1))
+            '\'' => Symbol(try! s1[1:].to_string())
+            ':' => Tag(try! s1[1:].to_string())
+            '"' | '|' => Str(try! s1[1:].to_string())
             _ =>
-              match (try? @strconv.parse_double(s1.trim(" ").to_string())) {
+              match
+                (try? @strconv.parse_double(s1.trim(char_set=" ").to_string())) {
                 Ok(f) => Number(f)
                 Err(e) =>
                   match e {
@@ -176,7 +177,8 @@ fn extract_cirru_edn(
               "%{}" =>
                 if xs.length() >= 3 {
                   let name = match xs[1] {
-                    Leaf(s) => EdnTag::new(s.trim_start(":").to_string())
+                    Leaf(s) =>
+                      EdnTag::new(s.trim_start(char_set=":").to_string())
                     List(e) =>
                       raise @strconv.StrConvError(
                         "expected record name in string: " + e.to_string(),
@@ -197,7 +199,12 @@ fn extract_cirru_edn(
                           match (ys[0], try? extract_cirru_edn(ys[1])) {
                             (Leaf(s), Ok(v)) =>
                               entries.push(
-                                (EdnTag::new(s.trim_start(":").to_string()), v),
+                                (
+                                  EdnTag::new(
+                                    s.trim_start(char_set=":").to_string(),
+                                  ),
+                                  v,
+                                ),
                               )
                             (Leaf(s), Err(e)) =>
                               raise @strconv.StrConvError(
@@ -378,14 +385,11 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru raise EdnCommonError {
 /// generate Cirru code from Edn
 pub fn Edn::format(
   data : Self,
-  use_inline? : Bool,
+  use_inline? : Bool = false,
 ) -> String raise EdnCommonError {
-  let options : @cirru_parser.CirruWriterOptions = {
-    use_inline: use_inline.unwrap_or(false),
-  }
   let ret = match assemble_cirru_node(data) {
-    Leaf(s) => try? Cirru::format([List([Leaf("do"), Leaf(s)])], options)
-    List(xs) => try? Cirru::format([List(xs)], options)
+    Leaf(s) => try? Cirru::format([List([Leaf("do"), Leaf(s)])], use_inline~)
+    List(xs) => try? Cirru::format([List(xs)], use_inline~)
   }
   match ret {
     Ok(s) => s

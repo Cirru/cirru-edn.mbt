@@ -30,7 +30,7 @@ impl Eq for EdnMapView with equal(self : EdnMapView, other : EdnMapView) -> Bool
 
 ///|
 impl Hash for EdnMapView with hash(self) {
-  self.inner().size()
+  self.inner().length()
 }
 
 ///|
@@ -93,7 +93,7 @@ pub fn EdnMapView::insert_key_str(
 
 ///|
 pub fn EdnMapView::length(self : EdnMapView) -> UInt {
-  self.inner().size().reinterpret_as_uint()
+  self.inner().length().reinterpret_as_uint()
 }
 
 ///|
@@ -103,10 +103,10 @@ pub fn EdnMapView::is_empty(self : EdnMapView) -> Bool {
 
 ///|
 impl Compare for EdnMapView with compare(self, right) -> Int {
-  if self.inner().size() < right.inner().size() {
+  if self.inner().length() < right.inner().length() {
     return -1
   }
-  if self.inner().size() > right.inner().size() {
+  if self.inner().length() > right.inner().length() {
     return 1
   }
   // order of map is not defined, so we need to sort the keys
