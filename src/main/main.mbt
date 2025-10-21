@@ -1,5 +1,5 @@
 ///|
-typealias @lib.Edn
+using @cirru_edn {type Edn}
 
 ///|
 let demo =
@@ -20,7 +20,7 @@ fn main {
     }
     Err(e) => println("error:" + e.to_string())
   }
-  let v = (try? Edn::Atom(@lib.Edn::Number(1.0)).format(use_inline=true)).unwrap()
+  let v = (try? Edn::Atom(@cirru_edn.Edn::Number(1.0)).format(use_inline=true)).unwrap()
   println(v)
   let parsed = (try? Edn::parse("atom 1")).unwrap()
   println(parsed.to_string())

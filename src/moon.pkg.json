@@ -1,0 +1,4 @@
+{
+  "import": [{ "path": "tiye/cirru-parser", "alias": "cirru_parser" }],
+  "test-import": [{ "path": "tiye/cirru-edn", "alias": "cirru_edn" }]
+}

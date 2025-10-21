@@ -33,7 +33,7 @@ impl Show for EdnSetView with output(self, logger) {
 
 ///|
 pub impl Hash for EdnSetView with hash(self) {
-  self.inner().size()
+  self.inner().length()
 }
 
 ///|
@@ -53,7 +53,7 @@ pub fn EdnSetView::add(self : EdnSetView, x : Edn) -> Unit {
 
 ///|
 pub fn EdnSetView::length(self : EdnSetView) -> UInt {
-  self.inner().size().reinterpret_as_uint()
+  self.inner().length().reinterpret_as_uint()
 }
 
 ///|
@@ -63,10 +63,10 @@ pub fn EdnSetView::is_empty(self : EdnSetView) -> Bool {
 
 ///|
 pub impl Compare for EdnSetView with compare(self, right) -> Int {
-  if self.inner().size() < right.inner().size() {
+  if self.inner().length() < right.inner().length() {
     return -1
   }
-  if self.inner().size() > right.inner().size() {
+  if self.inner().length() > right.inner().length() {
     return 1
   }
   // TODO does not compare the order of set elements since set is unordered
