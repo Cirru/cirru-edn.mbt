@@ -43,16 +43,18 @@ fn extract_cirru_edn(
             ':' => Tag(try! s1[1:].to_string())
             '"' | '|' => Str(try! s1[1:].to_string())
             _ =>
-              match
-                (try? @strconv.parse_double(s1.trim(char_set=" ").to_string())) {
-                Ok(f) => Number(f)
-                Err(e) =>
+              try
+                @strconv.parse_double(s1.trim(char_set=" ").to_string())
+              catch {
+                e =>
                   match e {
                     @strconv.StrConvError(s) =>
                       raise @strconv.StrConvError(
                         "failed to parse number: " + s,
                       )
                   }
+              } noraise {
+                f => Number(f)
               }
           }
       }
@@ -86,7 +88,9 @@ fn extract_cirru_edn(
                   None => raise @strconv.StrConvError("missing edn do value")
                   Some(_v) => ()
                 }
-                ret.or_error(@strconv.StrConvError("missing edn do value"))
+                ret.unwrap_or_error(
+                  @strconv.StrConvError("missing edn do value"),
+                )
               }
               "atom" =>
                 if xs.length() == 2 {
@@ -121,9 +125,10 @@ fn extract_cirru_edn(
                   if is_comment(x) {
                     continue
                   }
-                  match (try? extract_cirru_edn(x)) {
-                    Ok(v) => ys.push(v)
-                    Err(v) => raise @strconv.StrConvError(v.to_string())
+                  try extract_cirru_edn(x) catch {
+                    v => raise @strconv.StrConvError(v.to_string())
+                  } noraise {
+                    v => ys.push(v)
                   }
                 }
                 List(EdnListView(ys))
@@ -134,9 +139,10 @@ fn extract_cirru_edn(
                   if is_comment(x) {
                     continue
                   }
-                  match (try? extract_cirru_edn(x)) {
-                    Ok(v) => ys.add(v)
-                    Err(v) => raise @strconv.StrConvError(v.to_string())
+                  try extract_cirru_edn(x) catch {
+                    v => raise @strconv.StrConvError(v.to_string())
+                  } noraise {
+                    v => ys.add(v)
                   }
                 }
                 Edn::Set(EdnSetView(ys))
@@ -240,15 +246,16 @@ fn extract_cirru_edn(
                   match x {
                     Leaf(y) =>
                       if y.length() == 2 {
-                        match (try? @strconv.parse_int(y)) {
-                          Ok(b) => ys.push(b.reinterpret_as_uint())
-                          Err(e) =>
+                        try @strconv.parse_int(y) catch {
+                          e =>
                             match e {
                               @strconv.StrConvError(s) =>
                                 raise @strconv.StrConvError(
                                   "expected length 2 hex string in buffer, got: \{y} \{s}",
                                 )
                             }
+                        } noraise {
+                          b => ys.push(b.reinterpret_as_uint())
                         }
                       } else {
                         raise @strconv.StrConvError(
@@ -289,7 +296,7 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru raise EdnCommonError {
     Bool(v) => Leaf(v.to_string())
     Number(n) => Leaf(n.to_string())
     Symbol(s) => Leaf("'\{s}")
-    Tag(s) => Leaf(":" + s.inner())
+    Tag(s) => Leaf(":" + s.0)
     Str(s) => Leaf("|" + s)
     Quote(v) => List([Leaf("quote"), v])
     List(xs) => {
@@ -303,7 +310,7 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru raise EdnCommonError {
     Set(xs) => {
       let ys : Array[@cirru_parser.Cirru] = []
       ys.push(@cirru_parser.Cirru::Leaf("#{}"))
-      let items = xs.inner()
+      let items = xs.0
       // items.sort()
       for x in items {
         ys.push(assemble_cirru_node(x))
@@ -313,7 +320,7 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru raise EdnCommonError {
     Map(xs) => {
       let ys : Array[@cirru_parser.Cirru] = []
       ys.push(@cirru_parser.Cirru::Leaf("{}"))
-      let items = Array::from_iter(xs.inner().iter())
+      let items = Array::from_iter(xs.0.iter())
       items.sort_by(fn(left, right) {
         let (a1, a2) = left
         let (b1, b2) = right
@@ -336,7 +343,7 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru raise EdnCommonError {
     Record({ tag: name, extra: entries }) => {
       let ys : Array[@cirru_parser.Cirru] = []
       ys.push(Leaf("%{}"))
-      ys.push(Leaf(":" + name.inner()))
+      ys.push(Leaf(":" + name.0))
       let ordered_entries = entries
       ordered_entries.sort_by(fn(left, right) {
         let (_a1, a2) = left
@@ -349,7 +356,7 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru raise EdnCommonError {
       })
       for entry in ordered_entries {
         let v = entry.1
-        ys.push(List([Leaf(":" + entry.0.inner()), assemble_cirru_node(v)]))
+        ys.push(List([Leaf(":" + entry.0.0), assemble_cirru_node(v)]))
       }
       List(ys)
     }
@@ -366,7 +373,7 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru raise EdnCommonError {
     Buffer(buf) => {
       let ys : Array[@cirru_parser.Cirru] = []
       ys.push(Leaf("buf"))
-      for b in buf.inner() {
+      for b in buf.0 {
         ys.push(Leaf(BigInt::from_int(b.reinterpret_as_int()).to_hex()))
       }
       List(ys)

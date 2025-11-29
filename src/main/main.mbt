@@ -13,12 +13,13 @@ let demo =
 
 ///|
 fn main {
-  match (try? Edn::parse(demo)) {
-    Ok(x) => {
+  try Edn::parse(demo) catch {
+    e => println("error:" + e.to_string())
+  } noraise {
+    x => {
       println(x.to_string())
       println((try? x.format(use_inline=false)).unwrap())
     }
-    Err(e) => println("error:" + e.to_string())
   }
   let v = (try? Edn::Atom(@cirru_edn.Edn::Number(1.0)).format(use_inline=true)).unwrap()
   println(v)
