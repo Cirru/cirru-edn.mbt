@@ -3,12 +3,12 @@ struct EdnListView(Array[Edn]) derive(Eq)
 
 ///|
 impl Hash for EdnListView with hash(self) {
-  self.inner().length()
+  self.0.length()
 }
 
 ///|
 impl Hash for EdnListView with hash_combine(self, hasher) {
-  for i in self.inner() {
+  for i in self.0 {
     i.hash_combine(hasher)
   }
 }
@@ -17,11 +17,11 @@ impl Hash for EdnListView with hash_combine(self, hasher) {
 impl Show for EdnListView with output(self, logger) {
   let mut s = ""
   s = s + "(list )"
-  for i = 0; i < self.inner().length(); i = i + 1 {
+  for i = 0; i < self.0.length(); i = i + 1 {
     if i > 0 {
       s = s + ", "
     }
-    s = s + self.inner()[i].to_string()
+    s = s + self.0[i].to_string()
   }
   s = s + ")"
   logger.write_string(s)
@@ -29,16 +29,16 @@ impl Show for EdnListView with output(self, logger) {
 
 ///|
 impl Compare for EdnListView with compare(self, right) -> Int {
-  for i = 0; i < self.inner().length(); i = i + 1 {
-    if i >= right.inner().length() {
+  for i = 0; i < self.0.length(); i = i + 1 {
+    if i >= right.0.length() {
       return 1
     }
-    let ret = self.inner()[i].compare(right.inner()[i])
+    let ret = self.0[i].compare(right.0[i])
     if ret != 0 {
       return ret
     }
   }
-  if self.inner().length() < right.inner().length() {
+  if self.0.length() < right.0.length() {
     return -1
   }
   0
@@ -46,8 +46,8 @@ impl Compare for EdnListView with compare(self, right) -> Int {
 
 ///|
 pub fn EdnListView::get(self : EdnListView, idx : UInt) -> Edn? {
-  if idx < self.inner().length().reinterpret_as_uint() {
-    Some(self.inner()[idx.reinterpret_as_int()])
+  if idx < self.0.length().reinterpret_as_uint() {
+    Some(self.0[idx.reinterpret_as_int()])
   } else {
     None
   }
@@ -55,8 +55,8 @@ pub fn EdnListView::get(self : EdnListView, idx : UInt) -> Edn? {
 
 ///|
 pub fn EdnListView::get_or_nil(self : EdnListView, idx : UInt) -> Edn {
-  if idx < self.inner().length().reinterpret_as_uint() {
-    self.inner()[idx.reinterpret_as_int()]
+  if idx < self.0.length().reinterpret_as_uint() {
+    self.0[idx.reinterpret_as_int()]
   } else {
     Edn::Nil
   }
@@ -64,26 +64,26 @@ pub fn EdnListView::get_or_nil(self : EdnListView, idx : UInt) -> Edn {
 
 ///|
 pub fn EdnListView::length(self : EdnListView) -> UInt {
-  self.inner().length().reinterpret_as_uint()
+  self.0.length().reinterpret_as_uint()
 }
 
 ///|
 pub fn EdnListView::is_empty(self : EdnListView) -> Bool {
-  self.inner().length() == 0
+  self.0.length() == 0
 }
 
 ///|
 /// mutablely push an element to the end of the list
 pub fn EdnListView::push(self : EdnListView, x : Edn) -> Unit {
-  self.inner().push(x)
+  self.0.push(x)
 }
 
 ///|
 /// implement iterator for EdnListView
 pub fn EdnListView::iter(self : EdnListView) -> Iter[Edn] {
   Iter::new(fn(yielding) {
-    for i = 0; i < self.inner().length(); i = i + 1 {
-      if yielding(self.inner()[i]) == IterEnd {
+    for i = 0; i < self.0.length(); i = i + 1 {
+      if yielding(self.0[i]) == IterEnd {
         break IterEnd
       }
     } else {

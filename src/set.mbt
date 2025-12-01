@@ -8,15 +8,11 @@ pub struct EdnSetView(@hashset.HashSet[Edn])
 /// TODO: this is not efficient, we should implement a more efficient way to compare two sets
 pub impl Eq for EdnSetView with equal(self : EdnSetView, other : EdnSetView) -> Bool {
   let mut equal = true
-  self
-  .inner()
-  .each(fn(x) { if not(other.inner().contains(x)) { equal = false } })
+  self.0.each(fn(x) { if not(other.0.contains(x)) { equal = false } })
   if not(equal) {
     return false
   }
-  other
-  .inner()
-  .each(fn(x) { if not(self.inner().contains(x)) { equal = false } })
+  other.0.each(fn(x) { if not(self.0.contains(x)) { equal = false } })
   equal
 }
 
@@ -24,7 +20,7 @@ pub impl Eq for EdnSetView with equal(self : EdnSetView, other : EdnSetView) -> 
 impl Show for EdnSetView with output(self, logger) {
   let mut s = ""
   s = s + "(set"
-  for i in self.inner() {
+  for i in self.0 {
     s = s + " " + i.to_string()
   }
   s = s + ")"
@@ -33,40 +29,40 @@ impl Show for EdnSetView with output(self, logger) {
 
 ///|
 pub impl Hash for EdnSetView with hash(self) {
-  self.inner().length()
+  self.0.length()
 }
 
 ///|
 pub impl Hash for EdnSetView with hash_combine(self, hasher) {
-  self.inner().each(fn(x) { x.hash_combine(hasher) })
+  self.0.each(fn(x) { x.hash_combine(hasher) })
 }
 
 ///|
 pub fn EdnSetView::contains(self : EdnSetView, x : Edn) -> Bool {
-  self.inner().contains(x)
+  self.0.contains(x)
 }
 
 ///|
 pub fn EdnSetView::add(self : EdnSetView, x : Edn) -> Unit {
-  self.inner().add(x)
+  self.0.add(x)
 }
 
 ///|
 pub fn EdnSetView::length(self : EdnSetView) -> UInt {
-  self.inner().length().reinterpret_as_uint()
+  self.0.length().reinterpret_as_uint()
 }
 
 ///|
 pub fn EdnSetView::is_empty(self : EdnSetView) -> Bool {
-  self.inner().is_empty()
+  self.0.is_empty()
 }
 
 ///|
 pub impl Compare for EdnSetView with compare(self, right) -> Int {
-  if self.inner().length() < right.inner().length() {
+  if self.0.length() < right.0.length() {
     return -1
   }
-  if self.inner().length() > right.inner().length() {
+  if self.0.length() > right.0.length() {
     return 1
   }
   // TODO does not compare the order of set elements since set is unordered
