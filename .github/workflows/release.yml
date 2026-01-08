@@ -1,0 +1,28 @@
+name: release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Moonbit
+        uses: hustcer/setup-moonbit@v1
+
+      - name: moon check
+        run: moon update && moon version && moon check --target js
+
+      - name: moon test
+        run: moon build --target js --debug
+
+      - name: setup credentials
+        run: |
+          mkdir -p ~/.moon
+          echo '${{ secrets.MOON_CREDENTIALS }}' > ~/.moon/credentials.json
+
+      - name: moon publish
+        run: moon publish
