@@ -1,0 +1,9 @@
+import {
+  "moonbitlang/core/hashset" @hashset,
+  "moonbitlang/core/strconv" @strconv,
+  "tiye/cirru-parser" @cirru_parser,
+}
+
+import {
+  "tiye/cirru-edn" @cirru_edn,
+} for "test"
