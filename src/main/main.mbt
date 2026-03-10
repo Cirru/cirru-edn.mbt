@@ -18,11 +18,11 @@ fn main {
   } noraise {
     x => {
       println(x.to_string())
-      println((try? x.format(use_inline=false)).unwrap())
+      println(try! x.format(use_inline=false))
     }
   }
-  let v = (try? Edn::Atom(@cirru_edn.Edn::Number(1.0)).format(use_inline=true)).unwrap()
+  let v = try! Edn::Atom(@cirru_edn.Edn::Number(1.0)).format(use_inline=true)
   println(v)
-  let parsed = (try? Edn::parse("atom 1")).unwrap()
+  let parsed = try! Edn::parse("atom 1")
   println(parsed.to_string())
 }

@@ -1,0 +1,7 @@
+import {
+  "tiye/cirru-edn" @cirru_edn,
+}
+
+options(
+  "is-main": true,
+)

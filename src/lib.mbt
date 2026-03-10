@@ -2,7 +2,9 @@
 using @cirru_parser {type Cirru}
 
 ///|
-pub(all) suberror EdnCommonError String derive(Eq, Hash, Default, Show)
+pub(all) suberror EdnCommonError {
+  EdnCommonError(String)
+} derive(Eq, Hash, Show)
 
 ///|
 pub impl @strconv.FromStr for Edn with from_str(s) {
@@ -12,7 +14,7 @@ pub impl @strconv.FromStr for Edn with from_str(s) {
 ///|
 /// parse Cirru code into data
 pub fn Edn::parse(s : String) -> Edn raise @strconv.StrConvError {
-  let xs = (try? Cirru::parse(s)).unwrap()
+  let xs = try! Cirru::parse(s)
   if xs.length() == 1 {
     match xs[0] {
       Leaf(s) =>
@@ -374,7 +376,9 @@ fn assemble_cirru_node(data : Edn) -> @cirru_parser.Cirru raise EdnCommonError {
       let ys : Array[@cirru_parser.Cirru] = []
       ys.push(Leaf("buf"))
       for b in buf.0 {
-        ys.push(Leaf(BigInt::from_int(b.reinterpret_as_int()).to_hex()))
+        ys.push(
+          Leaf(BigInt::from_int(b.reinterpret_as_int()).to_string(radix=16)),
+        )
       }
       List(ys)
     }

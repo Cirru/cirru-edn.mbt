@@ -82,11 +82,13 @@ pub fn EdnListView::push(self : EdnListView, x : Edn) -> Unit {
 /// implement iterator for EdnListView
 pub fn EdnListView::iter(self : EdnListView) -> Iter[Edn] {
   let mut i = 0
-  Iterator::new(() => if i < self.0.length() {
-    let val = self.0[i]
-    i = i + 1
-    Some(val)
-  } else {
-    None
-  }).iter()
+  Iter::new(() => {
+    if i < self.0.length() {
+      let val = self.0[i]
+      i = i + 1
+      Some(val)
+    } else {
+      None
+    }
+  })
 }
